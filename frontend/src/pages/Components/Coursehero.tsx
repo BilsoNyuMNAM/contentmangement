@@ -1,0 +1,17 @@
+
+
+export default function Coursehero(){
+    return(
+        <div>
+            <div className="text-white">
+                <div className="flex  items-center justify-center mb-4">
+                    <h1 className="font-extrabold text-5xl">Welcome to this CMS</h1>
+                </div>
+                <div className="flex items-center justify-center mb-4">
+                     <p>This CMS is just documenting what i have learn so that i can review them later in life </p>
+                </div>
+               
+            </div>
+        </div>
+    )
+}
