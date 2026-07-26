@@ -13,6 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Allcourse/>}/>
         <Route path="/:subject_name" element={<Noteui/>}/>
+        <Route path="/:subject_name/:chapter_name" element={<Noteui/>}/>
       </Routes>
       
     </BrowserRouter>

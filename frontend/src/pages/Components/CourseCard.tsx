@@ -19,7 +19,7 @@ export default function CourseCard({subject_name, description}:{subject_name:str
                     </div>
 
                     <div className="text-white flex border rounded-lg px-4 py-2">
-                        <button className="font-spaceMono" onClick={()=>navigate(`/${subject_name.toLowerCase().replaceAll(" ", "-")}`)}> Start <span>→</span></button>
+                        <button className="font-spaceMono" onClick={()=>navigate(`/${subject_name.replaceAll(" ", "-")}`)}> Start <span>→</span></button>
                     </div>
                 </div>
             </div>

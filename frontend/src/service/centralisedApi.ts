@@ -1,11 +1,12 @@
 
 
-async function baseRequest({endpoint, method, body}: {endpoint: string, method: string, body?: any}) {
+async function baseRequest({endpoint, method, body, params}: {endpoint: string, method: string, body?: any, params?: any}) {
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/${endpoint}`,{
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/${endpoint}?${new URLSearchParams(params)}`,{
         method:method,
         headers:{
-            'Content-Type':'application/json'
+            'Content-Type':'application/json',
+            
         },
         body: JSON.stringify(body)
        
@@ -18,8 +19,8 @@ async function getAllCourses(){
     return baseRequest({endpoint:'courses', method:'GET'});
 }
 
-async function getNotes(){
-    return baseRequest({endpoint:"notes", method:"GET"})
+async function getNotes(subject_name:string){
+    return baseRequest({endpoint:"notes", method:"GET", params:{subject_name}});
 }
 
 
