@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router"
 
 export default function Dropdown({ chaptersData, subject_name }: { chaptersData: any[] | null , subject_name:string}) {
     const navigate = useNavigate();
@@ -22,7 +22,7 @@ export default function Dropdown({ chaptersData, subject_name }: { chaptersData:
                     
                     <DropdownMenuGroup >
                     {chaptersData && chaptersData.map((chapter) => (
-                        <DropdownMenuItem key={chapter.id} onClick={()=>navigate(`/${subject_name}/${chapter.chapterName}`)}>{chapter.chapterName}</DropdownMenuItem>
+                        <DropdownMenuItem key={chapter.id} onClick={()=>navigate(`/${subject_name}/${chapter.chapterName.replaceAll(" ", "-")}`)}>{chapter.chapterName}</DropdownMenuItem>
                     ))}
                     </DropdownMenuGroup>
                     {/* <DropdownMenuSeparator />

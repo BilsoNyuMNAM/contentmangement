@@ -19,8 +19,12 @@ async function getAllCourses(){
     return baseRequest({endpoint:'courses', method:'GET'});
 }
 
-async function getNotes(subject_name:string){
-    return baseRequest({endpoint:"notes", method:"GET", params:{subject_name}});
+async function getNotes(subject_name:string, chapter_name?:string){
+    const params: any = {subject_name};
+    if (chapter_name) {
+        params.chapter_name = chapter_name;
+    }
+    return baseRequest({endpoint:"notes", method:"GET", params});
 }
 
 

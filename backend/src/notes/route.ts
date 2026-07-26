@@ -4,10 +4,10 @@ const noteRouter = express.Router();
 noteRouter.use(express.json());
 noteRouter.get("/notes", async (req, res) => {
     // console.log("1. inside the note route")
-    const {subject_name} = req.query
+    const {subject_name, chapter_name} = req.query
     console.log("subject_name:", subject_name);
     //@ts-ignore
-    const result = await fetchNotesContent(subject_name);
+    const result = await fetchNotesContent(subject_name, chapter_name);
     if(!result){
         return res.status(404).json({ error: "Course not found" });
     }
