@@ -6,7 +6,7 @@ noteRouter.get("/notes", async (req, res) => {
     // console.log("1. inside the note route")
     const result = await fetchNotesContent();
     res.json({
-        data: result
+        recordMap: result
     });
 });
 

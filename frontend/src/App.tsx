@@ -2,7 +2,7 @@
 import './App.css'
 import Allcourse from './pages/Course/Allcourse'
 import {BrowserRouter, Routes, Route} from 'react-router'
-import Noteui from './pages/Course/Noteui'
+import Noteui from './pages/note/Noteui'
 
 
 function App() {

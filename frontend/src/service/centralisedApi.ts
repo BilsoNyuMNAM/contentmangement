@@ -18,6 +18,10 @@ async function getAllCourses(){
     return baseRequest({endpoint:'courses', method:'GET'});
 }
 
+async function getNotes(){
+    return baseRequest({endpoint:"notes", method:"GET"})
+}
 
-export {getAllCourses}
+
+export {getAllCourses, getNotes}
 

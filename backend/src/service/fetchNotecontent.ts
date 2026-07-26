@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/Prisma.js";
 import {NotionAPI} from "notion-client";
+
 const notion = new NotionAPI();
 async function fetchNotesContent(){
     // console.log("2.inside the fetchNotesContent service")
@@ -14,6 +15,7 @@ async function fetchNotesContent(){
     try{
         //@ts-ignore
         recordMap = await notion.getPage(result?.pageId)
+        
     }
     catch(error){
         console.error("Error fetching page from Notion:", error)
