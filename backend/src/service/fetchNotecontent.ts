@@ -20,11 +20,16 @@ async function fetchNotesContent(subject_name:string, chapter_name?:string){
             'id': 'asc'
         }
     })
-
+    if(!result2 || result2.length === 0){
+        return null;
+    }
     let  recordMap = null
     if(chapter_name){ //if there is chapter name , give that content 
 
         const chapterObject = result2.find((chapter)=>chapter.chapterName === chapter_name.replaceAll("-", " "))
+        if(!chapterObject){
+            return null;
+        }
         try{
             //@ts-ignore
             recordMap = await notion.getPage(chapterObject?.pageId)
@@ -32,6 +37,7 @@ async function fetchNotesContent(subject_name:string, chapter_name?:string){
         }
         catch(error){
             console.error("Error fetching page from Notion:", error)
+            return null;
         }
         
     } // else give the content of the first chapter of that subject

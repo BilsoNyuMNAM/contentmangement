@@ -41,3 +41,7 @@ problem 5:
         if (!chapter_name && notes.chaptersData && notes.chaptersData.length > 0) {
                 navigate(`/${subject_name}/${notes.chaptersData[0].chapterName.replaceAll(" ", "-")}`, { replace: true });
             }
+
+
+
+

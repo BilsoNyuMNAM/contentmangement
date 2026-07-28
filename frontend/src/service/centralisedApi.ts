@@ -12,6 +12,12 @@ async function baseRequest({endpoint, method, body, params}: {endpoint: string, 
        
     })
      const data = await response.json();
+    //  if(!response.ok){
+    //     window.location.href = "/notfound";
+    //  }
+    if(!response.ok){
+        throw new Error(data.error || 'An error occurred');
+    }
     return data;
 }
 

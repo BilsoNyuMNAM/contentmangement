@@ -1,22 +1,20 @@
 import CourseCard from "../Components/CourseCard";
 import Coursehero from "../Components/Coursehero";
 import {getAllCourses} from "../../service/centralisedApi"
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 export default function Allcourse(){
-    const [coursesData, setCoursesData] = useState(null);
-    async function fetchCourses(){
-        // console.log("2. inside the fetchCourse function ")
-        const result = await getAllCourses();
-        // console.log("3. Fetched courses data:", result);
-        setCoursesData(result.data);
-    }
-    useEffect(() => {
-        // console.log("1. Fetching courses data...");
-        fetchCourses();
-
-    }, []);
-    if(!coursesData){
+    const {data, isLoading, isError} = useQuery({
+        queryKey:["courses"],
+        queryFn: getAllCourses
+    })
+    console.log("data", data)
+    
+    if(isLoading){
         return <div>Loading...</div>
+    }
+
+    if(isError || !data){
+        return <div className="h-screen bg-black text-white flex justify-center items-center">Failed to load courses. Please try again later.</div>
     }
 
     return(
@@ -28,7 +26,7 @@ export default function Allcourse(){
                 </div>
                 <div className="mt-10">
                     {
-                        coursesData?.map((course)=>{
+                        data.data?.map((course)=>{
                             return(
                                 <CourseCard subject_name={course.title} description= {course.description} />
                             )

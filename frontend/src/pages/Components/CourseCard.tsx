@@ -1,7 +1,27 @@
 import { useNavigate } from "react-router"
-
+import { getNotes } from "@/service/centralisedApi";
+import { useQueryClient } from "@tanstack/react-query";
 export default function CourseCard({subject_name, description}:{subject_name:string, description:string}){
     const navigate  = useNavigate();
+    const queryClient = useQueryClient();
+
+    const prefetchNotes = async (subject_name: string) =>{
+        //1.Fetch & cache for ['notes', undefined] (returns data)
+        const data = await queryClient.fetchQuery({
+            queryKey:['notes', undefined],
+            queryFn:()=>{return getNotes(subject_name)}, // the cached data comes from here  which is stored in the queryClient 
+            staleTime: 1000 * 60 * 5,
+        })
+        //2. Extract first chapter & format spaces with hyphens
+        const firstChapter = data?.chaptersData?.[0]?.chapterName?.replaceAll(" ", "-");
+        // 3. Seed cache for ['notes', firstChapter]
+        if (firstChapter) {
+            queryClient.setQueryData(['notes', firstChapter], data);
+        }
+        
+    }
+    
+    
     return(
         <div>
             <div className="px-6 py-6 rounded-lg border mb-4 border-[#9ca3af] ">
@@ -19,7 +39,7 @@ export default function CourseCard({subject_name, description}:{subject_name:str
                     </div>
 
                     <div className="text-white flex border rounded-lg px-4 py-2">
-                        <button className="font-spaceMono" onClick={()=>navigate(`/${subject_name.replaceAll(" ", "-")}`)}> Start <span>→</span></button>
+                        <button className="font-spaceMono" onMouseOver={() => {prefetchNotes(subject_name)}} onClick={() => navigate(`/${subject_name.replaceAll(" ", "-")}`)}> Start <span>→</span></button>
                     </div>
                 </div>
             </div>
