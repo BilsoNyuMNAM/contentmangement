@@ -4,15 +4,24 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* ----- Root / Page Background ----- */
-.notion-app,
-.notion,
-.notion-frame,
-.notion-page,
-.notion-page-content,
-.notion-viewport {
+/* ----- Root / Page Background (Dark Mode) ----- */
+.notion.dark-mode,
+.notion.dark-mode .notion-frame,
+.notion.dark-mode .notion-page,
+.notion.dark-mode .notion-page-content,
+.notion.dark-mode .notion-viewport {
   background: #000000 !important;
   color: #ededed !important;
+}
+
+/* ----- Root / Page Background (Light Mode) ----- */
+.notion-light-mode .notion,
+.notion-light-mode .notion-frame,
+.notion-light-mode .notion-page,
+.notion-light-mode .notion-page-content,
+.notion-light-mode .notion-viewport {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
 }
 
 /* Full-page wrapper */
@@ -55,9 +64,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Page title */
-.notion-page .notion-title,
-.notion-page-content .notion-title {
+.notion.dark-mode .notion-title,
+.notion.dark-mode .notion-page-content .notion-title {
   font-family: 'Bebas Neue', sans-serif !important;
   font-weight: 400 !important;
   letter-spacing: 0.04em !important;
@@ -70,9 +78,23 @@
   border-bottom: 1px solid #1a1a1a !important;
 }
 
-/* ----- Headings ----- */
-.notion-h1,
-.notion-h-title .notion-h1 {
+.notion-light-mode .notion-title,
+.notion-light-mode .notion-page-content .notion-title {
+  font-family: 'Bebas Neue', sans-serif !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  color: #111111 !important;
+  font-size: 3.5rem !important;
+  line-height: 1.05 !important;
+  margin-bottom: 1.5rem !important;
+  padding-bottom: 1rem !important;
+  border-bottom: 1px solid #e5e5e5 !important;
+}
+
+/* ----- Headings (Dark) ----- */
+.notion.dark-mode .notion-h1,
+.notion.dark-mode .notion-h-title .notion-h1 {
   font-size: 2rem !important;
   font-weight: 700 !important;
   letter-spacing: -0.03em !important;
@@ -83,8 +105,8 @@
   border-bottom: 1px solid #1a1a1a !important;
 }
 
-.notion-h2,
-.notion-h-title .notion-h2 {
+.notion.dark-mode .notion-h2,
+.notion.dark-mode .notion-h-title .notion-h2 {
   font-size: 1.5rem !important;
   font-weight: 600 !important;
   letter-spacing: -0.02em !important;
@@ -93,8 +115,8 @@
   margin-bottom: 0.5rem !important;
 }
 
-.notion-h3,
-.notion-h-title .notion-h3 {
+.notion.dark-mode .notion-h3,
+.notion.dark-mode .notion-h-title .notion-h3 {
   font-size: 1.2rem !important;
   font-weight: 600 !important;
   letter-spacing: -0.01em !important;
@@ -103,12 +125,50 @@
   margin-bottom: 0.5rem !important;
 }
 
-/* ----- Body Text / Paragraphs ----- */
-.notion-text,
-.notion-text__content {
+/* ----- Headings (Light) ----- */
+.notion-light-mode .notion-h1 {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+  color: #111111 !important;
+  margin-top: 2.5rem !important;
+  margin-bottom: 0.75rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid #e5e5e5 !important;
+}
+
+.notion-light-mode .notion-h2 {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  color: #222222 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.notion-light-mode .notion-h3 {
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  color: #333333 !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* ----- Body Text / Paragraphs (Dark) ----- */
+.notion.dark-mode .notion-text,
+.notion.dark-mode .notion-text__content {
   font-size: 1rem !important;
   line-height: 1.8 !important;
   color: #a1a1aa !important;
+}
+
+/* ----- Body Text / Paragraphs (Light) ----- */
+.notion-light-mode .notion-text,
+.notion-light-mode .notion-text__content {
+  font-size: 1rem !important;
+  line-height: 1.8 !important;
+  color: #444444 !important;
 }
 
 /* ----- Links ----- */
@@ -126,8 +186,8 @@
   border-bottom-color: #60a5fa !important;
 }
 
-/* ----- Inline Code ----- */
-.notion-inline-code {
+/* ----- Inline Code (Dark) ----- */
+.notion.dark-mode .notion-inline-code {
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
   font-size: 0.875em !important;
   background: #1a1a2e !important;
@@ -138,8 +198,20 @@
   font-weight: 500 !important;
 }
 
-/* ----- Code Blocks ----- */
-.notion-code {
+/* ----- Inline Code (Light) ----- */
+.notion-light-mode .notion-inline-code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
+  font-size: 0.875em !important;
+  background: #f0f4ff !important;
+  color: #2563eb !important;
+  padding: 0.15em 0.4em !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(59, 130, 246, 0.15) !important;
+  font-weight: 500 !important;
+}
+
+/* ----- Code Blocks (Dark) ----- */
+.notion.dark-mode .notion-code {
   background: #0d0d0d !important;
   border: 1px solid #2a2a2a !important;
   border-radius: 4px !important;
@@ -149,13 +221,34 @@
   position: relative !important;
 }
 
-.notion-code > code,
-.notion-code pre,
-.notion-code pre code {
+/* ----- Code Blocks (Light) ----- */
+.notion-light-mode .notion-code {
+  background: #f8f9fb !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 4px !important;
+  padding: 1.25rem 1.5rem !important;
+  margin: 1.5rem 0 !important;
+  overflow-x: auto !important;
+  position: relative !important;
+}
+
+.notion.dark-mode .notion-code > code,
+.notion.dark-mode .notion-code pre,
+.notion.dark-mode .notion-code pre code {
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
   font-size: 0.85rem !important;
   line-height: 1.75 !important;
   color: #e4e4e7 !important;
+  background: transparent !important;
+}
+
+.notion-light-mode .notion-code > code,
+.notion-light-mode .notion-code pre,
+.notion-light-mode .notion-code pre code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
+  font-size: 0.85rem !important;
+  line-height: 1.75 !important;
+  color: #1e293b !important;
   background: transparent !important;
 }
 
@@ -186,8 +279,8 @@
   border-color: #444 !important;
 }
 
-/* ----- Blockquotes / Callouts ----- */
-.notion-quote {
+/* ----- Blockquotes / Callouts (Dark) ----- */
+.notion.dark-mode .notion-quote {
   border-left: 3px solid #3b82f6 !important;
   background: rgba(59, 130, 246, 0.05) !important;
   padding: 1rem 1.25rem !important;
@@ -197,7 +290,7 @@
   font-style: normal !important;
 }
 
-.notion-callout {
+.notion.dark-mode .notion-callout {
   background: #0d0d0d !important;
   border: 1px solid #1e1e1e !important;
   border-radius: 12px !important;
@@ -205,15 +298,40 @@
   margin: 1.25rem 0 !important;
 }
 
+/* ----- Blockquotes / Callouts (Light) ----- */
+.notion-light-mode .notion-quote {
+  border-left: 3px solid #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.05) !important;
+  padding: 1rem 1.25rem !important;
+  margin: 1.25rem 0 !important;
+  border-radius: 0 8px 8px 0 !important;
+  color: #444444 !important;
+  font-style: normal !important;
+}
+
+.notion-light-mode .notion-callout {
+  background: #f8f9fb !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 1rem 1.25rem !important;
+  margin: 1.25rem 0 !important;
+}
+
+
 /* ----- Dividers ----- */
 .notion-hr {
   border-color: #1a1a1a !important;
   margin: 2rem 0 !important;
 }
 
-/* ----- Lists ----- */
-.notion-list {
+/* ----- Lists (Dark) ----- */
+.notion.dark-mode .notion-list {
   color: #a1a1aa !important;
+}
+
+/* ----- Lists (Light) ----- */
+.notion-light-mode .notion-list {
+  color: #444444 !important;
 }
 
 .notion-list-disc li,
@@ -232,8 +350,8 @@
   font-weight: 500 !important;
 }
 
-/* ----- Toggle Blocks ----- */
-.notion-toggle {
+/* ----- Toggle Blocks (Dark) ----- */
+.notion.dark-mode .notion-toggle {
   background: #0d0d0d !important;
   border: 1px solid #1a1a1a !important;
   border-radius: 10px !important;
@@ -242,19 +360,39 @@
   transition: border-color 0.2s ease !important;
 }
 
-.notion-toggle:hover {
+.notion.dark-mode .notion-toggle:hover {
   border-color: #2a2a2a !important;
 }
 
-.notion-toggle > summary {
+.notion.dark-mode .notion-toggle > summary {
   cursor: pointer !important;
   font-weight: 500 !important;
   color: #ededed !important;
 }
 
-/* ----- Tables ----- */
-.notion-table,
-.notion-simple-table {
+/* ----- Toggle Blocks (Light) ----- */
+.notion-light-mode .notion-toggle {
+  background: #f8f9fb !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  margin: 0.75rem 0 !important;
+  padding: 0.5rem 1rem !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.notion-light-mode .notion-toggle:hover {
+  border-color: #d1d5db !important;
+}
+
+.notion-light-mode .notion-toggle > summary {
+  cursor: pointer !important;
+  font-weight: 500 !important;
+  color: #111111 !important;
+}
+
+/* ----- Tables (Dark) ----- */
+.notion.dark-mode .notion-table,
+.notion.dark-mode .notion-simple-table {
   border-collapse: separate !important;
   border-spacing: 0 !important;
   border: 1px solid #1e1e1e !important;
@@ -264,9 +402,9 @@
   width: 100% !important;
 }
 
-.notion-table th,
-.notion-simple-table th,
-.notion-table-header {
+.notion.dark-mode .notion-table th,
+.notion.dark-mode .notion-simple-table th,
+.notion.dark-mode .notion-table-header {
   background: #111111 !important;
   color: #ededed !important;
   font-weight: 600 !important;
@@ -278,23 +416,68 @@
   letter-spacing: 0.03em !important;
 }
 
-.notion-table td,
-.notion-simple-table td,
-.notion-table-cell {
+.notion.dark-mode .notion-table td,
+.notion.dark-mode .notion-simple-table td,
+.notion.dark-mode .notion-table-cell {
   padding: 0.75rem 1rem !important;
   border-bottom: 1px solid #141414 !important;
   color: #a1a1aa !important;
   font-size: 0.9rem !important;
 }
 
-.notion-table tr:last-child td,
-.notion-simple-table tr:last-child td {
+.notion.dark-mode .notion-table tr:last-child td,
+.notion.dark-mode .notion-simple-table tr:last-child td {
   border-bottom: none !important;
 }
 
-.notion-table tr:hover td,
-.notion-simple-table tr:hover td {
+.notion.dark-mode .notion-table tr:hover td,
+.notion.dark-mode .notion-simple-table tr:hover td {
   background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* ----- Tables (Light) ----- */
+.notion-light-mode .notion-table,
+.notion-light-mode .notion-simple-table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  margin: 1.5rem 0 !important;
+  width: 100% !important;
+}
+
+.notion-light-mode .notion-table th,
+.notion-light-mode .notion-simple-table th,
+.notion-light-mode .notion-table-header {
+  background: #f3f4f6 !important;
+  color: #111111 !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+  padding: 0.75rem 1rem !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  font-size: 0.875rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+}
+
+.notion-light-mode .notion-table td,
+.notion-light-mode .notion-simple-table td,
+.notion-light-mode .notion-table-cell {
+  padding: 0.75rem 1rem !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  color: #444444 !important;
+  font-size: 0.9rem !important;
+}
+
+.notion-light-mode .notion-table tr:last-child td,
+.notion-light-mode .notion-simple-table tr:last-child td {
+  border-bottom: none !important;
+}
+
+.notion-light-mode .notion-table tr:hover td,
+.notion-light-mode .notion-simple-table tr:hover td {
+  background: rgba(0, 0, 0, 0.02) !important;
 }
 
 /* ----- Bookmarks ----- */
@@ -406,16 +589,28 @@
   color: #3b82f6 !important;
 }
 
-/* ----- Bold / Italic / Underline ----- */
-.notion-text b,
-.notion-text strong {
+/* ----- Bold / Italic (Dark) ----- */
+.notion.dark-mode .notion-text b,
+.notion.dark-mode .notion-text strong {
   color: #ededed !important;
   font-weight: 600 !important;
 }
 
-.notion-text em,
-.notion-text i {
+.notion.dark-mode .notion-text em,
+.notion.dark-mode .notion-text i {
   color: #c4c4c4 !important;
+}
+
+/* ----- Bold / Italic (Light) ----- */
+.notion-light-mode .notion-text b,
+.notion-light-mode .notion-text strong {
+  color: #111111 !important;
+  font-weight: 600 !important;
+}
+
+.notion-light-mode .notion-text em,
+.notion-light-mode .notion-text i {
+  color: #444444 !important;
 }
 
 /* ----- Notion Equation ----- */
@@ -468,8 +663,6 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: #000000;
-  color: #666;
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   letter-spacing: 0.02em;
@@ -493,6 +686,14 @@
 
 /* ----- Wrapper ----- */
 .noteui-wrapper {
-  background: #000000;
   min-height: 100vh;
 }
+
+.noteui-wrapper:not(.notion-light-mode) {
+  background: #000000;
+}
+
+.noteui-wrapper.notion-light-mode {
+  background: #ffffff;
+}
+

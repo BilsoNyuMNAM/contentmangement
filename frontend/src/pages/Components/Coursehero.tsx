@@ -3,7 +3,7 @@
 export default function Coursehero(){
     return(
         <div>
-            <div className="text-white">
+            <div className="text-black dark:text-white">
                 <div className="flex  items-center justify-center mb-4">
                     <h1 className="font-extrabold text-5xl">Welcome to this CMS</h1>
                 </div>

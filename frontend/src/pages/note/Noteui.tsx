@@ -8,14 +8,15 @@ import { useParams, useNavigate } from 'react-router';
 import { Code } from 'react-notion-x/build/third-party/code';
 import 'prismjs/themes/prism-tomorrow.css';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
-
+import { useEffect, useContext } from 'react';
+import { theme } from '../../theme';
+import Notenavbar from '../Components/Notenavbar';
 export default function Noteui(){
-    // const location = useLocation();
-    // const subject_id = location.state?.subject_id;
-    // //subject_id type: number 
     const navigate = useNavigate();
     const {subject_name, chapter_name} = useParams();
+    const { currentTheme } = useContext(theme);
+    const isDark = currentTheme === 'dark';
+    
     async function getNotescontent(){
         const notes = await getNotes(subject_name, chapter_name);
         
@@ -25,6 +26,7 @@ export default function Noteui(){
         
         return notes;
     }
+    
     const {data, isError,isLoading} = useQuery({
         queryKey:['notes', subject_name, chapter_name],
         queryFn:getNotescontent
@@ -38,7 +40,7 @@ export default function Noteui(){
 
     if(isLoading){
         return(
-            <div className="noteui-loading">
+            <div className="noteui-loading dark:bg-black bg-white dark:text-neutral-400 text-neutral-600">
                 <div className="noteui-loading-spinner"></div>
                 <span>Loading documentation…</span>
             </div>
@@ -53,12 +55,12 @@ export default function Noteui(){
 
 
     return(
-        <div className="noteui-wrapper">
-            <div className='w-full text-white p-6 fixed z-10 flex gap-3 items-center'>
+        <div className={`noteui-wrapper ${isDark ? '' : 'notion-light-mode'}`}>
+            <div className='w-full text-black dark:text-white p-6 fixed z-10 flex gap-3 items-center bg-white/80 dark:bg-black/80 backdrop-blur-sm'>
                 <div >
                     <Dropdown chaptersData={data?.chaptersData} subject_name={subject_name} chapter_name={chapter_name}/>
                 </div>  
-                <div className='text-white text-4xl tracking-tighter font-semibold'>
+                <div className='text-black dark:text-white text-4xl tracking-tighter font-semibold'>
                     <h2>{subject_name}</h2>
                 </div>
                 <div>
@@ -66,11 +68,15 @@ export default function Noteui(){
                 </div>
             </div>
             <NotionRenderer 
-                recordMap={data?.recordMap} fullPage={true} darkMode={true} disableHeader={true}
+                recordMap={data?.recordMap} fullPage={true} darkMode={isDark} disableHeader={true}
                 components={{
                     Code
                 }}
             />
+            {
+              data?.chaptersData?<Notenavbar chapterList={data.chaptersData} subjectName={subject_name}/> : null
+            }
+            
         </div>
     )
 }
