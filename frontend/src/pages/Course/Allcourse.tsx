@@ -1,16 +1,26 @@
 import CourseCard from "../Components/CourseCard";
 import Coursehero from "../Components/Coursehero";
 import {getAllCourses} from "../../service/centralisedApi"
-import { useQuery } from "@tanstack/react-query";
-import { useContext } from "react";
+import { useQuery} from "@tanstack/react-query";
+import { useContext, useEffect, useRef, useState} from "react";
 import { theme } from "../../theme";
+import Fuse from "fuse.js";
 export default function Allcourse(){
+    
+    const searchCourse = useRef<HTMLInputElement>(null);
+    
     const {currentTheme, setTheme} = useContext(theme);
+
     const {data, isLoading, isError} = useQuery({
         queryKey:["courses"],
         queryFn: getAllCourses
     })
     
+    const [searchResults, setSearchResults] = useState<any[] | null>(null);
+
+    useEffect(() => { 
+        if(data?.data) setSearchResults(data.data); 
+    }, [data])
     
     if(isLoading){
         return (
@@ -55,6 +65,27 @@ export default function Allcourse(){
         return <div className="h-screen bg-white dark:bg-black text-black dark:text-white flex justify-center items-center">Failed to load courses. Please try again later.</div>
     }
 
+    const courses = data.data || [];
+    
+    const options = {    
+        keys: ['title', 'description'],
+        threshold: 0.3,
+    }
+    const fuse = new Fuse(courses, options)
+
+    function searchFunction(){
+        const query = searchCourse.current?.value
+        console.log("search query:", query);
+        if(!query){
+            setSearchResults(courses);
+            return;
+        }
+        const result = fuse.search(query);
+        setSearchResults(result.map((res) => res.item));
+    }
+
+    const displayCourses = searchResults ?? courses;
+
     return(
         <div className="w-full min-h-screen flex justify-center bg-white dark:bg-black text-black dark:text-white">
             <div className="w-full max-w-4xl px-6 mt-10 py-8"> 
@@ -75,15 +106,17 @@ export default function Allcourse(){
                             </>
                         )}
                     </button>
+
+                    <input type="text" ref={searchCourse} onInput={searchFunction} placeholder="Search courses..." className="ml-4 p-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300" />
                 </div>
                 <div>
                     <Coursehero/>
                 </div>
                 <div className="mt-10">
                     {
-                        data.data?.map((course)=>{
+                        displayCourses.map((course: any, index: number)=>{
                             return(
-                                <CourseCard subject_name={course.title} description= {course.description} />
+                                <CourseCard key={course.id || index} subject_name={course.title} description= {course.description} />
                             )
                         })
                     }
