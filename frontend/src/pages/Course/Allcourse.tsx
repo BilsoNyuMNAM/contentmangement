@@ -5,7 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import { theme } from "../../theme";
 export default function Allcourse(){
-    const {currentTheme, setTheme} = useContext(theme);
+    const themeContext = useContext(theme);
+    const currentTheme = themeContext?.currentTheme;
+    const setTheme = themeContext?.setTheme;
     const {data, isLoading, isError} = useQuery({
         queryKey:["courses"],
         queryFn: getAllCourses
@@ -81,7 +83,7 @@ export default function Allcourse(){
                 </div>
                 <div className="mt-10">
                     {
-                        data.data?.map((course)=>{
+                        data.data?.map((course: any)=>{
                             return(
                                 <CourseCard subject_name={course.title} description= {course.description} />
                             )
