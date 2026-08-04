@@ -30,7 +30,7 @@ export default function CourseCard({subject_name, description}:{subject_name:str
                         <div className="h-8 w-2 border-2 bg-neutral-400 dark:bg-[#9ca3af]"></div>
                         <div>
                             <div>
-                                <h1 className="font-extrabold text-2xl text-black dark:text-white font-spaceMono">{subject_name}</h1>
+                                <h1 className="font-semibold text-2xl tracking-[-0.4px]">{subject_name}</h1>
                             </div>
                             <div className="text-neutral-500 dark:text-[#9ca3af]">
                                 <p>{description}</p>

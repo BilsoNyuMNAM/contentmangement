@@ -2,7 +2,7 @@
    Next.js Docs-Inspired Dark Theme for NotionRenderer
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
 
 /* ----- Root / Page Background (Dark Mode) ----- */
 .notion.dark-mode,
@@ -59,18 +59,42 @@
 
 /* ----- Typography ----- */
 .notion {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: 'Geist', 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ----- Reset / Remove Background Colors from All Notion Headings ----- */
+.notion .notion-title,
+.notion .notion-h,
+.notion .notion-h1,
+.notion .notion-h2,
+.notion .notion-h3,
+.notion .notion-h4,
+.notion .notion-h-title,
+.notion h1,
+.notion h2,
+.notion h3,
+.notion h4,
+.notion .notion-h1[class*="_background"],
+.notion .notion-h2[class*="_background"],
+.notion .notion-h3[class*="_background"],
+.notion .notion-h4[class*="_background"],
+.notion .notion-h[class*="_background"],
+.notion .notion-title[class*="_background"] {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 .notion.dark-mode .notion-title,
 .notion.dark-mode .notion-page-content .notion-title {
-  font-family: 'Bebas Neue', sans-serif !important;
-  font-weight: 400 !important;
-  letter-spacing: 0.04em !important;
-  text-transform: uppercase !important;
-  color: #ffffff !important;
+  font-family: 'Geist', 'Geist Variable', Arial, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -2.4px !important;
+  text-transform: none !important;
+  color: inherit !important;
+  background: transparent !important;
+  background-color: transparent !important;
   font-size: 3.5rem !important;
   line-height: 1.05 !important;
   margin-bottom: 1.5rem !important;
@@ -80,11 +104,13 @@
 
 .notion-light-mode .notion-title,
 .notion-light-mode .notion-page-content .notion-title {
-  font-family: 'Bebas Neue', sans-serif !important;
-  font-weight: 400 !important;
-  letter-spacing: 0.04em !important;
-  text-transform: uppercase !important;
-  color: #111111 !important;
+  font-family: 'Geist', 'Geist Variable', Arial, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -2.4px !important;
+  text-transform: none !important;
+  color: inherit !important;
+  background: transparent !important;
+  background-color: transparent !important;
   font-size: 3.5rem !important;
   line-height: 1.05 !important;
   margin-bottom: 1.5rem !important;
@@ -96,9 +122,11 @@
 .notion.dark-mode .notion-h1,
 .notion.dark-mode .notion-h-title .notion-h1 {
   font-size: 2rem !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.03em !important;
-  color: #ffffff !important;
+  font-weight: 600 !important;
+  letter-spacing: -1.28px !important;
+  color: inherit !important;
+  background: transparent !important;
+  background-color: transparent !important;
   margin-top: 2.5rem !important;
   margin-bottom: 0.75rem !important;
   padding-bottom: 0.5rem !important;
@@ -109,8 +137,10 @@
 .notion.dark-mode .notion-h-title .notion-h2 {
   font-size: 1.5rem !important;
   font-weight: 600 !important;
-  letter-spacing: -0.02em !important;
-  color: #f0f0f0 !important;
+  letter-spacing: -0.4px !important;
+  color: inherit !important;
+  background: transparent !important;
+  background-color: transparent !important;
   margin-top: 2rem !important;
   margin-bottom: 0.5rem !important;
 }
@@ -119,18 +149,34 @@
 .notion.dark-mode .notion-h-title .notion-h3 {
   font-size: 1.2rem !important;
   font-weight: 600 !important;
-  letter-spacing: -0.01em !important;
-  color: #e0e0e0 !important;
+  letter-spacing: -0.4px !important;
+  color: inherit !important;
+  background: transparent !important;
+  background-color: transparent !important;
   margin-top: 1.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.notion.dark-mode .notion-h4,
+.notion.dark-mode .notion-h-title .notion-h4 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.28px !important;
+  color: inherit !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  margin-top: 1.25rem !important;
   margin-bottom: 0.5rem !important;
 }
 
 /* ----- Headings (Light) ----- */
 .notion-light-mode .notion-h1 {
   font-size: 2rem !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.03em !important;
-  color: #111111 !important;
+  font-weight: 600 !important;
+  letter-spacing: -1.28px !important;
+  color: inherit !important;
+  background: transparent !important;
+  background-color: transparent !important;
   margin-top: 2.5rem !important;
   margin-bottom: 0.75rem !important;
   padding-bottom: 0.5rem !important;
@@ -140,8 +186,10 @@
 .notion-light-mode .notion-h2 {
   font-size: 1.5rem !important;
   font-weight: 600 !important;
-  letter-spacing: -0.02em !important;
-  color: #222222 !important;
+  letter-spacing: -0.4px !important;
+  color: inherit !important;
+  background: transparent !important;
+  background-color: transparent !important;
   margin-top: 2rem !important;
   margin-bottom: 0.5rem !important;
 }
@@ -149,9 +197,22 @@
 .notion-light-mode .notion-h3 {
   font-size: 1.2rem !important;
   font-weight: 600 !important;
-  letter-spacing: -0.01em !important;
-  color: #333333 !important;
+  letter-spacing: -0.4px !important;
+  color: inherit !important;
+  background: transparent !important;
+  background-color: transparent !important;
   margin-top: 1.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.notion-light-mode .notion-h4 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.28px !important;
+  color: inherit !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  margin-top: 1.25rem !important;
   margin-bottom: 0.5rem !important;
 }
 
@@ -188,34 +249,38 @@
 
 /* ----- Inline Code (Dark) ----- */
 .notion.dark-mode .notion-inline-code {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
-  font-size: 0.875em !important;
-  background: #1a1a2e !important;
-  color: #7dd3fc !important;
+  font-family: 'Geist Mono', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  letter-spacing: 0 !important;
+  background: #161616 !important;
+  color: inherit !important;
   padding: 0.15em 0.4em !important;
   border-radius: 6px !important;
-  border: 1px solid rgba(59, 130, 246, 0.15) !important;
-  font-weight: 500 !important;
+  border: 1px solid #2e2e2e !important;
+  font-weight: 400 !important;
 }
 
 /* ----- Inline Code (Light) ----- */
 .notion-light-mode .notion-inline-code {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
-  font-size: 0.875em !important;
-  background: #f0f4ff !important;
-  color: #2563eb !important;
+  font-family: 'Geist Mono', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  letter-spacing: 0 !important;
+  background: #f2f2f2 !important;
+  color: inherit !important;
   padding: 0.15em 0.4em !important;
   border-radius: 6px !important;
-  border: 1px solid rgba(59, 130, 246, 0.15) !important;
-  font-weight: 500 !important;
+  border: 1px solid #ebebeb !important;
+  font-weight: 400 !important;
 }
 
 /* ----- Code Blocks (Dark) ----- */
 .notion.dark-mode .notion-code {
   background: #0d0d0d !important;
   border: 1px solid #2a2a2a !important;
-  border-radius: 4px !important;
-  padding: 1.25rem 1.5rem !important;
+  border-radius: 12px !important;
+  padding: 1rem 1.25rem !important;
   margin: 1.5rem 0 !important;
   overflow-x: auto !important;
   position: relative !important;
@@ -223,10 +288,10 @@
 
 /* ----- Code Blocks (Light) ----- */
 .notion-light-mode .notion-code {
-  background: #f8f9fb !important;
-  border: 1px solid #e5e7eb !important;
-  border-radius: 4px !important;
-  padding: 1.25rem 1.5rem !important;
+  background: #ffffff !important;
+  border: 1px solid #ebebeb !important;
+  border-radius: 12px !important;
+  padding: 1rem 1.25rem !important;
   margin: 1.5rem 0 !important;
   overflow-x: auto !important;
   position: relative !important;
@@ -235,20 +300,22 @@
 .notion.dark-mode .notion-code > code,
 .notion.dark-mode .notion-code pre,
 .notion.dark-mode .notion-code pre code {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
-  font-size: 0.85rem !important;
-  line-height: 1.75 !important;
-  color: #e4e4e7 !important;
+  font-family: 'Geist Mono', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  letter-spacing: 0 !important;
+  color: inherit !important;
   background: transparent !important;
 }
 
 .notion-light-mode .notion-code > code,
 .notion-light-mode .notion-code pre,
 .notion-light-mode .notion-code pre code {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
-  font-size: 0.85rem !important;
-  line-height: 1.75 !important;
-  color: #1e293b !important;
+  font-family: 'Geist Mono', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  letter-spacing: 0 !important;
+  color: inherit !important;
   background: transparent !important;
 }
 
@@ -261,7 +328,7 @@
   border: 1px solid #333 !important;
   border-radius: 6px !important;
   color: #888 !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: 'Geist', 'Geist Variable', sans-serif !important;
   font-size: 0.75rem !important;
   padding: 4px 10px !important;
   cursor: pointer !important;
@@ -342,11 +409,11 @@
 }
 
 .notion-list-disc li::marker {
-  color: #3b82f6 !important;
+  color: #888888 !important;
 }
 
 .notion-list-numbered li::marker {
-  color: #666 !important;
+  color: #888888 !important;
   font-weight: 500 !important;
 }
 
@@ -663,7 +730,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Geist', 'Geist Variable', sans-serif;
   font-size: 0.95rem;
   letter-spacing: 0.02em;
 }

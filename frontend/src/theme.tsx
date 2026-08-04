@@ -1,9 +1,14 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, type ReactNode } from "react";
 
-const theme = createContext(null); //context object
+export interface ThemeContextType {
+    currentTheme: string;
+    setTheme: () => void;
+}
+
+const theme = createContext<ThemeContextType | null>(null); //context object
 
 
-function Themeprovider({children}){
+function Themeprovider({children}: {children: ReactNode}){
     const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || 'dark');
 
     // Sync the `dark` class on <html> so Tailwind's dark: variant
