@@ -26,7 +26,9 @@ export default function Dropdown({ chaptersData, subject_name, chapter_name }: {
         });
     };
     useEffect(() => {
-        const current = chaptersData?.find(chapter => chapter.chapterName.replaceAll(" ", "-").toLowerCase() === chapter_name?.toLowerCase())?.chapterName || "";
+        const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const target = norm(chapter_name || "");
+        const current = chaptersData?.find(chapter => norm(chapter.chapterName) === target)?.chapterName || "";
         setCurrentChapter(current)
     },[chapter_name, chaptersData])
 

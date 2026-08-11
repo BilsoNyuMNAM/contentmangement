@@ -22,7 +22,7 @@ async function baseRequest({endpoint, method, body, params}: {endpoint: string, 
 }
 
 async function getAllCourses(){
-    return baseRequest({endpoint:'courses', method:'GET'});
+    return baseRequest({endpoint:'tag', method:'GET'});
 }
 
 async function getNotes(subject_name:string, chapter_name?:string){

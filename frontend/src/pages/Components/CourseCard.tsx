@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router"
 import { getNotes } from "@/service/centralisedApi";
 import { useQueryClient } from "@tanstack/react-query";
-export default function CourseCard({subject_name, description}:{subject_name:string, description:string}){
+export default function CourseCard({subject_name, description, tag}:{subject_name:string, description:string, tag?:string}){
     const navigate  = useNavigate();
     const queryClient = useQueryClient();
 
@@ -32,6 +32,11 @@ export default function CourseCard({subject_name, description}:{subject_name:str
                             <div>
                                 <h1 className="font-semibold text-2xl tracking-[-0.4px]">{subject_name}</h1>
                             </div>
+                            {tag && (
+                                <span className="text-[13px] font-mono italic text-amber-600 dark:text-amber-400">
+                                    <span className="opacity-50">#</span>{tag}
+                                </span>
+                            )}
                             <div className="text-neutral-500 dark:text-[#9ca3af]">
                                 <p>{description}</p>
                             </div>

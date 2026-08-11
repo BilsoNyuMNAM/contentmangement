@@ -25,12 +25,12 @@ async function safeSet(key: string | number, value: string): Promise<void> {
         console.warn(`Redis SET failed for key "${key}". Skipping cache write.`);
     }
 }
-async function safeCourse(){
+async function safeTag(){
     try{
-        return await client.get("course");
+        return await client.get("tag");
     }
     catch(error){
-        console.warn(`Redis GET failed for key "course". Skipping cache read.`);
+        console.warn(`Redis GET failed for key "tag". Skipping cache read.`);
     }
 }
-export { redis, client, safeGet, safeSet, safeCourse };
+export { redis, client, safeGet, safeSet, safeTag };

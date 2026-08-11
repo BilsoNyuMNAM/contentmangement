@@ -1,26 +1,68 @@
 import CourseCard from "../Components/CourseCard";
 import Coursehero from "../Components/Coursehero";
+import CourseFilter from "../Components/CourseFilter";
 import {getAllCourses} from "../../service/centralisedApi"
 import { useQuery} from "@tanstack/react-query";
-import { useContext, useEffect, useRef, useState} from "react";
+import { useContext, useEffect, useMemo, useRef, useState} from "react";
 import { theme } from "../../theme";
 import Fuse from "fuse.js";
+
+interface Course {
+    id: number;
+    title: string;
+    description?: string;
+    tagId?: number;
+    tag: string;
+}
+
+interface Tag {
+    id: number;
+    tagName: string;
+    courses: {
+        id: number;
+        title: string;
+        description?: string;
+        tagId?: number;
+    }[];
+}
+
 export default function Allcourse(){
     
     const searchCourse = useRef<HTMLInputElement>(null);
     
-    const {currentTheme, setTheme} = useContext(theme);
+    const themeContext = useContext(theme);
+    const currentTheme = themeContext?.currentTheme;
+    const setTheme = themeContext?.setTheme;
 
     const {data, isLoading, isError} = useQuery({
         queryKey:["courses"],
         queryFn: getAllCourses
     })
     
-    const [searchResults, setSearchResults] = useState<any[] | null>(null);
+    const [searchResults, setSearchResults] = useState<Course[] | null>(null);
+    const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
+    // Flatten tags → courses, attaching the tagName to each course
+    const courses = useMemo<Course[]>(() => {
+        if (!data?.data) return [];
+        return data.data.flatMap((tag: Tag) =>
+            tag.courses.map((course) => ({
+                ...course,
+                tag: tag.tagName,
+            }))
+        );
+    }, [data]);
+    const tags = useMemo<string[]>(() => {
+        if (!data?.data) return [];
+        return data.data.map((tag: Tag) => tag.tagName);
+    }, [data]);
+    
     useEffect(() => { 
-        if(data?.data) setSearchResults(data.data); 
-    }, [data])
+        if(courses.length > 0) {
+            setSearchResults(courses) 
+           
+        }
+    }, [courses])
     
     if(isLoading){
         return (
@@ -65,8 +107,6 @@ export default function Allcourse(){
         return <div className="h-screen bg-white dark:bg-black text-black dark:text-white flex justify-center items-center">Failed to load courses. Please try again later.</div>
     }
 
-    const courses = data.data || [];
-    
     const options = {    
         keys: ['title', 'description'],
         threshold: 0.3,
@@ -76,6 +116,10 @@ export default function Allcourse(){
     function searchFunction(){
         const query = searchCourse.current?.value
         console.log("search query:", query);
+
+        if (selectedTag) { //if there is any selection reset it 
+            setSelectedTag(null);
+        }
         if(!query){
             setSearchResults(courses);
             return;
@@ -83,16 +127,24 @@ export default function Allcourse(){
         const result = fuse.search(query);
         setSearchResults(result.map((res) => res.item));
     }
+      function handleTagSelect(tag: string | null) {
+            setSelectedTag(tag);
+            if (searchCourse.current) {
+                searchCourse.current.value = "";
+            }
+            setSearchResults(null);
+        }
 
-    const displayCourses = searchResults ?? courses;
-
+     const displayCourses = selectedTag
+        ? courses.filter((course) => course.tag === selectedTag)
+        : (searchResults ?? courses);
     return(
         <div className="w-full min-h-screen flex justify-center bg-white dark:bg-black text-black dark:text-white">
             <div className="w-full max-w-4xl px-6 mt-10 py-8"> 
-                <div className="w-full flex justify-end mb-4">
+                <div className="w-full flex items-center justify-end gap-3 mb-4">
                     <button
                         onClick={setTheme}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors duration-200 text-sm font-medium"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors duration-200 text-sm font-medium cursor-pointer"
                     >
                         {currentTheme === 'dark' ? (
                             <>
@@ -107,16 +159,18 @@ export default function Allcourse(){
                         )}
                     </button>
 
-                    <input type="text" ref={searchCourse} onInput={searchFunction} placeholder="Search courses..." className="ml-4 p-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300" />
+                    <input type="text" ref={searchCourse} onInput={searchFunction} placeholder="Search courses..." className="p-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300" />
+                    <CourseFilter tags={tags} selectedTag={selectedTag} onSelectTag={handleTagSelect} />
+
                 </div>
                 <div>
                     <Coursehero/>
                 </div>
                 <div className="mt-10">
                     {
-                        displayCourses.map((course: any, index: number)=>{
+                        displayCourses.map((course: Course, index: number)=>{
                             return(
-                                <CourseCard key={course.id || index} subject_name={course.title} description= {course.description} />
+                                <CourseCard key={course.id || index} subject_name={course.title} description={course.description || ""} tag={course.tag} />
                             )
                         })
                     }

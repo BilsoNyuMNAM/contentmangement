@@ -18,6 +18,8 @@ model Course{
   title String
   description String?
   chapters Chapter[]
+  tagId Int?
+  tags Tag ?@relation(fields: [tagId], references: [id]) 
 }
 
 model Chapter{
@@ -26,4 +28,10 @@ model Chapter{
   pageId String
   courseId Int
   course Course @relation(fields: [courseId], references: [id])
+}
+
+model Tag{
+  id Int @id @default (autoincrement())
+  tagName String
+  courses Course[]
 }

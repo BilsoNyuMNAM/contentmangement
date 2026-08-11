@@ -9,8 +9,10 @@ export default function Notenavbar({ chapterList, subjectName }: { chapterList: 
 
     const getIndex = () => {
         if (!chapterList || !chapter_name) return 0;
+        const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const target = norm(chapter_name);
         return chapterList.findIndex(
-            (chapter) => chapter.chapterName.replaceAll(" ", "-").toLowerCase() === chapter_name.toLowerCase()
+            (chapter) => norm(chapter.chapterName) === target
         );
     };
 
