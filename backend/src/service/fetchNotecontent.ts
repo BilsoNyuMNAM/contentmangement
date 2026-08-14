@@ -47,7 +47,7 @@ async function fetchNotesContent(subject_name:string, chapter_name?:string){
                 courseId: result.id
             },
             orderBy:{
-                'id': 'asc'
+                'order': 'asc'
             }
         })
         if(result2 && result2.length > 0){

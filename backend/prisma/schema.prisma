@@ -15,7 +15,7 @@ datasource db {
 
 model Course{
   id Int @id @default(autoincrement())
-  title String
+  title String @unique
   description String?
   chapters Chapter[]
   tagId Int?
@@ -25,13 +25,14 @@ model Course{
 model Chapter{
   id Int @id @default(autoincrement())
   chapterName String
-  pageId String
+  pageId String @unique
   courseId Int
+  order Int?
   course Course @relation(fields: [courseId], references: [id])
 }
 
 model Tag{
   id Int @id @default (autoincrement())
-  tagName String
+  tagName String @unique
   courses Course[]
 }
