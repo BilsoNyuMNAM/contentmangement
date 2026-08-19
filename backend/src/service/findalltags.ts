@@ -1,5 +1,6 @@
 import {prisma} from "../../lib/Prisma.js"
 import {redis, safeTag, safeSet} from "./redis.js"
+
 async function findAlltag(){
     let tags;
     await redis;

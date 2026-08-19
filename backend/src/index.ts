@@ -3,11 +3,12 @@ import express from "express";
 import courseRouter from "./course/route.js";
 import noteRouter from "./notes/route.js";
 import cors from "cors";
+import webHookRouter from "./webhook/route.js";
 const app = express();
 //  const prisma = new PrismaClient();
 
 app.use(cors());
+app.use("/api/v1", webHookRouter);
 app.use("/api/v1", courseRouter);
 app.use("/api/v1", noteRouter);
-
 app.listen(3000);

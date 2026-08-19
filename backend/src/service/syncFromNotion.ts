@@ -27,7 +27,7 @@ async function syncFromNotion() {
     });
     try{
         await upsertCourse(data); // Call the upsertCourse function to update the database with the fetched data
-        return { success: true, data };
+        return { success: true};
     }catch(err:any){
         return { success: false, error: err.message || err };
     }

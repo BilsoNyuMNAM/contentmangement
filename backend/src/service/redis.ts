@@ -18,9 +18,13 @@ async function safeGet(key: string | number): Promise<string | null> {
     }
 }
 
-async function safeSet(key: string | number, value: string): Promise<void> {
+async function safeSet(key: string | number, value: string, ttlSeconds?: number): Promise<void> {
     try {
-        await client.set(String(key), value);
+        if (ttlSeconds) {
+            await client.set(String(key), value, { EX: ttlSeconds });
+        } else {
+            await client.set(String(key), value);
+        }
     } catch (error) {
         console.warn(`Redis SET failed for key "${key}". Skipping cache write.`);
     }
@@ -33,4 +37,13 @@ async function safeTag(){
         console.warn(`Redis GET failed for key "tag". Skipping cache read.`);
     }
 }
-export { redis, client, safeGet, safeSet, safeTag };
+
+async function safeDelete(pageId:string){
+    try{
+        return await client.del(pageId)
+    }
+    catch(error){
+        console.warn(`Redis DEL failed for key "${pageId}". Skipping cache delete.`);
+    }
+}
+export { redis, client, safeGet, safeSet, safeTag, safeDelete };

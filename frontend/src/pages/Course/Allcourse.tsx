@@ -56,7 +56,7 @@ export default function Allcourse(){
         if (!data?.data) return [];
         return data.data.map((tag: Tag) => tag.tagName);
     }, [data]);
-    
+
     useEffect(() => { 
         if(courses.length > 0) {
             setSearchResults(courses) 
@@ -128,6 +128,7 @@ export default function Allcourse(){
         setSearchResults(result.map((res) => res.item));
     }
       function handleTagSelect(tag: string | null) {
+
             setSelectedTag(tag);
             if (searchCourse.current) {
                 searchCourse.current.value = "";
@@ -138,6 +139,7 @@ export default function Allcourse(){
      const displayCourses = selectedTag
         ? courses.filter((course) => course.tag === selectedTag)
         : (searchResults ?? courses);
+        
     return(
         <div className="w-full min-h-screen flex justify-center bg-white dark:bg-black text-black dark:text-white">
             <div className="w-full max-w-4xl px-6 mt-10 py-8"> 
