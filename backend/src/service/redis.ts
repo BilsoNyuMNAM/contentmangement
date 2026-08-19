@@ -1,6 +1,9 @@
 import { createClient } from 'redis';
 
-const client = createClient();
+
+const client = createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
 client.on('connect', () => console.log('Connected to Redis'));
 // Log Redis errors without crashing the server
 client.on('error', (err) => console.error('Redis Client Error:', err.message));
@@ -18,13 +21,9 @@ async function safeGet(key: string | number): Promise<string | null> {
     }
 }
 
-async function safeSet(key: string | number, value: string, ttlSeconds?: number): Promise<void> {
+async function safeSet(key: string | number, value: string): Promise<void> {
     try {
-        if (ttlSeconds) {
-            await client.set(String(key), value, { EX: ttlSeconds });
-        } else {
-            await client.set(String(key), value);
-        }
+        await client.set(String(key), value);
     } catch (error) {
         console.warn(`Redis SET failed for key "${key}". Skipping cache write.`);
     }
