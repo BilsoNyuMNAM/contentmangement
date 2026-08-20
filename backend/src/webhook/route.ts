@@ -24,6 +24,7 @@ async function verifyNotionEvent(header:any, rawRequestBody:any){
 }
 
 webHookRouter.post("/webhook", async (req, res) => {
+    // console.log("this route is being hit by notion webhook")
     let token;
     let header;
     
