@@ -10,10 +10,10 @@ async function findAlltag(){
             include:{
                 courses:{
                     include:{
-                        chapters:{
-                            select:{
-                                chapterName:true,
-                            }
+                        _count:{
+                           select:{
+                            chapters:true
+                           }
                         }
                     }
                 }
