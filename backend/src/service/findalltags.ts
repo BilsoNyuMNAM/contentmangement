@@ -8,7 +8,15 @@ async function findAlltag(){
     if (!cachedTags) {
         tags = await prisma.tag.findMany({
             include:{
-                courses:true
+                courses:{
+                    include:{
+                        chapters:{
+                            select:{
+                                chapterName:true,
+                            }
+                        }
+                    }
+                }
             }
         });
         if(tags){
