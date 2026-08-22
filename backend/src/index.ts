@@ -16,4 +16,5 @@ app.use("/api/v1", courseRouter);
 app.use("/api/v1", noteRouter);
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
+
 });
