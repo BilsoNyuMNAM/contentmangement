@@ -52,19 +52,16 @@ export default function Noteui(){
         return null;
     }
 
-
-
-
     return(
         <div className={`noteui-wrapper ${isDark ? '' : 'notion-light-mode'}`}>
-            <div className='w-full text-black dark:text-white p-6 fixed z-10 flex gap-3 items-center bg-white/80 dark:bg-black/80 backdrop-blur-sm'>
-                <div >
+            <div className='w-full text-black dark:text-white px-3 py-3 sm:px-6 sm:py-4 fixed z-10 flex gap-2 sm:gap-3 items-center bg-white/80 dark:bg-black/80 backdrop-blur-sm'>
+                <div className='shrink-0'>
                     <Dropdown chaptersData={data?.chaptersData} subject_name={subject_name || ""} chapter_name={chapter_name}/>
                 </div>  
-                <div className='text-4xl tracking-[-1.28px] font-semibold'>
+                <div className='text-lg sm:text-2xl md:text-4xl tracking-[-1.28px] font-semibold truncate min-w-0'>
                     <h2>{subject_name}</h2>
                 </div>
-                <div>
+                <div className='shrink-0 ml-auto'>
                     <Backtohome/>
                 </div>
             </div>
