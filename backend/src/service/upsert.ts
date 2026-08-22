@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/Prisma.js";
-type Chapter =  { PageId: string; ChapterName: string | null; CourseName: string | null; Tag: string | null; Order: number | null; }
+type Chapter =  { PageId: string; ChapterName: string | null; CourseName: string | null; Tag: string | null; Order: number | null; Description: string | null; }
 async function upsertCourse(chapterList: Chapter[]) {
-    for(const chapter of chapterList){ //since all the 3 tables are related , i need to use $transactions
+    for(const chapter of chapterList){
             const tag = await prisma.tag.upsert({
                 where:{
                     tagName:chapter.Tag || "Unknown"
@@ -18,11 +18,13 @@ async function upsertCourse(chapterList: Chapter[]) {
                     title:chapter.CourseName || "Unknown"
                 },
                 update:{
-                    tagId:tag.id
+                    tagId:tag.id,
+                    description:chapter.Description
                 },
                 create:{
                     title:chapter.CourseName || "Unknown",
-                    tagId:tag.id
+                    tagId:tag.id,
+                    description:chapter.Description
                 }
             })
             await prisma.chapter.upsert({
