@@ -1,34 +1,46 @@
-import {prisma} from "../../lib/Prisma.js"
-import {redis, safeTag, safeSet} from "./redis.js"
+import { prisma } from "../../lib/Prisma.js";
+import { getHybridCache, setHybridCache, deleteHybridCache } from "./notionCache.js";
 
-async function findAlltag(){
-    let tags;
-    await redis;
-    const cachedTags = await safeTag();
-    if (!cachedTags) {
-        tags = await prisma.tag.findMany({
-            include:{
-                courses:{
-                    include:{
-                        _count:{
-                           select:{
-                            chapters:true
-                           }
+const TAGS_CACHE_KEY = "cms:published_tags";
+const TAG_CACHE_TTL_SECONDS = 10 * 60; // 10 minutes
+
+async function findAlltag() {
+    // 1. Try hybrid cache
+    const cached = await getHybridCache(TAGS_CACHE_KEY);
+    if (cached) {
+        return cached;
+    }
+
+    // 2. Fetch from Postgres
+    const tags = await prisma.tag.findMany({
+        include: {
+            courses: {
+                where: {
+                    status: "PUBLISHED"
+                },
+                include: {
+                    _count: {
+                        select: {
+                            chapters: true
                         }
                     }
                 }
             }
-        });
-        if(tags){
-            await safeSet("tag", JSON.stringify(tags));
         }
+    });
 
-    }
-    else{
-        tags = JSON.parse(cachedTags);
-    }
+    // Only return tags that have at least one published course
+    const activeTags = tags.filter(t => t.courses.length > 0);
 
-    return tags;
+    // 3. Save to hybrid cache
+    await setHybridCache(TAGS_CACHE_KEY, activeTags, TAG_CACHE_TTL_SECONDS);
+    return activeTags;
+}
+
+export function invalidateTagCache() {
+    deleteHybridCache(TAGS_CACHE_KEY).catch((err) =>
+        console.warn("Failed to invalidate tag cache:", err)
+    );
 }
 
 export default findAlltag;

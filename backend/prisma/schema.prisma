@@ -13,26 +13,38 @@ datasource db {
 }
 
 
-model Course{
-  id Int @id @default(autoincrement())
-  title String @unique
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Course {
+  id          Int          @id @default(autoincrement())
+  title       String       @unique
   description String?
-  chapters Chapter[]
-  tagId Int?
-  tags Tag ?@relation(fields: [tagId], references: [id]) 
+  status      CourseStatus @default(PUBLISHED)
+  chapters    Chapter[]
+  tagId       Int?
+  tags        Tag?         @relation(fields: [tagId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now()) @updatedAt
 }
 
-model Chapter{
-  id Int @id @default(autoincrement())
-  chapterName String
-  pageId String @unique
-  courseId Int
-  order Int?
-  course Course @relation(fields: [courseId], references: [id])
+model Chapter {
+  id             Int          @id @default(autoincrement())
+  chapterName    String
+  pageId         String       @unique
+  courseId       Int
+  order          Int?
+  plainText      String?      @db.Text
+  contentSnippet String?      @db.Text
+  course         Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
 }
 
-model Tag{
-  id Int @id @default (autoincrement())
-  tagName String @unique
+model Tag {
+  id      Int      @id @default(autoincrement())
+  tagName String   @unique
   courses Course[]
 }

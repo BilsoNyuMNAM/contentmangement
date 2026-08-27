@@ -7,6 +7,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "prisma generate && tsc",
+    "start": "node dist/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
@@ -17,16 +20,15 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "@notionhq/client": "^5.24.0",
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.9.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@upstash/redis": "^1.38.2",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "notion-client": "^7.10.0",
-    "pg": "^8.22.0",
-    "redis": "^6.1.0"
+    "pg": "^8.22.0"
   }
 }

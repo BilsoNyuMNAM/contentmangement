@@ -1,11 +1,10 @@
 import "dotenv/config";
 import { prisma } from "../../lib/Prisma.js";
-import {NotionAPI} from "notion-client";
-import {redis, safeGet, safeSet}from "./redis.js";
+import { NotionAPI } from "notion-client";
+import { getCachedNotionPage } from "./notionCache.js";
 
 const rawToken = process.env.NOTION_TOKEN_V2 ?? "";
 const authToken = rawToken.includes("%") ? decodeURIComponent(rawToken) : rawToken;
-
 
 const notion = new NotionAPI({
     authToken: authToken,
@@ -15,108 +14,108 @@ const notion = new NotionAPI({
         }
     }
 });
-async function fetchNotesContent(subject_name:string, chapter_name?:string){
-    await redis; // wait for connection attempt (won't throw — error is caught in redis.ts)
-    let result;
-    let result2;
-    subject_name = subject_name.replaceAll("-", " ");
-    const cacheData= await safeGet(subject_name);
-    
-    if(!cacheData){
-        result = await prisma.course.findFirst({
-            where:{
-                title:subject_name
-            }
-        })
-        if(result){
-            await safeSet(subject_name, JSON.stringify(result));
-        }
-    } 
-    else{
-        result = JSON.parse(cacheData);
-    }
 
-    if(!result){
-        return null; 
-    }
-    const cachedChapterList = await safeGet(result.id); 
-    
-    if(!cachedChapterList){ //no cache with the subject_id is present , then query the database and cache it 
-        result2 = await prisma.chapter.findMany({ 
-            where:{
+import { extractNotionPlainText } from "./textExtractor.js";
+import { getHybridCache, setHybridCache } from "./notionCache.js";
+
+async function fetchNotesContent(subject_name: string, chapter_name?: string, isAdmin: boolean = false) {
+    subject_name = subject_name.replaceAll("-", " ");
+    const metaCacheKey = `cms:course_meta:${subject_name.toLowerCase().trim()}`;
+
+    let courseData: { course: any; chapters: any[] } | null = await getHybridCache(metaCacheKey);
+
+    if (!courseData) {
+        const result = await prisma.course.findFirst({
+            where: {
+                title: {
+                    equals: subject_name,
+                    mode: 'insensitive'
+                }
+            }
+        });
+
+        if (!result) {
+            return null;
+        }
+
+        const result2 = await prisma.chapter.findMany({
+            where: {
                 courseId: result.id
             },
-            orderBy:{
+            orderBy: {
                 'order': 'asc'
             }
-        })
-        if(result2 && result2.length > 0){
-            await safeSet(result.id, JSON.stringify(result2));
-        }
-    } else{
-        result2 = JSON.parse(cachedChapterList);
-    }
-   
+        });
 
-    if(!result2 || result2.length === 0){ //
+        if (!result2 || result2.length === 0) {
+            return null;
+        }
+
+        courseData = { course: result, chapters: result2 };
+        await setHybridCache(metaCacheKey, courseData, 1800);
+    }
+
+    const { course: result, chapters: result2 } = courseData;
+
+    // Hide draft courses from non-admin users
+    if (result.status === "DRAFT" && !isAdmin) {
         return null;
     }
-    
 
-    let  recordMap = null
-    if(chapter_name){ //if there is chapter name , give that content 
-        
+    let recordMap = null;
+    let targetChapter: any = null;
+
+    if (chapter_name) {
         const normalizeSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
         const targetSlug = normalizeSlug(chapter_name);
 
-        const chapterObject = result2.find((chapter: any) => 
+        targetChapter = result2.find((chapter: any) =>
             chapter.chapterName === chapter_name.replaceAll("-", " ") ||
             chapter.chapterName.replaceAll(" ", "-").toLowerCase() === chapter_name.toLowerCase() ||
             normalizeSlug(chapter.chapterName) === targetSlug
         );
 
-        //{id: , chapterName: , pageId: , courseId:}
-        if(!chapterObject){ //result2 has all the chapters of that subject, if the chapter name is there there that means , it is also not present in the database
+        if (!targetChapter || !targetChapter.pageId) {
             return null;
         }
-        try{
-            //@ts-ignore
-            const cachedNotionpage = await safeGet(chapterObject?.pageId) ////check if there is any cache for the chapter (stores as : pageId as the key)
-            if(!cachedNotionpage){
-                 recordMap = await notion.getPage(chapterObject?.pageId)
-                 await safeSet(chapterObject?.pageId, JSON.stringify(recordMap))
-            }
-            else{
-                recordMap = JSON.parse(cachedNotionpage);
-            }
-        }
-        catch(error){
-            console.error("❌ Error fetching from Notion | pageId:", chapterObject?.pageId);
-            console.error(error)
+        try {
+            recordMap = await getCachedNotionPage(notion, targetChapter.pageId);
+        } catch (error) {
+            console.error("❌ Error fetching from Notion | pageId:", targetChapter.pageId);
+            console.error(error);
             return null;
         }
-        
-    } 
-    else{ // there was no chapter_name coming from the request 
-        try{
-            //@ts-ignore
-            const cachedNotionpage = await safeGet(result2[0]?.pageId)
-            if(!cachedNotionpage){
-                recordMap = await notion.getPage(result2[0]?.pageId)
-                await safeSet(result2[0]?.pageId, JSON.stringify(recordMap))
-            }
-            else{
-                recordMap = JSON.parse(cachedNotionpage);
-            }
+    } else {
+        targetChapter = result2[0];
+        const firstPageId = targetChapter?.pageId;
+        if (!firstPageId) {
+            return null;
         }
-        catch(error){
-            console.error("❌ Error fetching from Notion (first chapter) | pageId:", result2[0]?.pageId);
-            console.error(error)
+        try {
+            recordMap = await getCachedNotionPage(notion, firstPageId);
+        } catch (error) {
+            console.error("❌ Error fetching from Notion (first chapter) | pageId:", firstPageId);
+            console.error(error);
             return null;
         }
     }
 
-    return { recordMap, result2 }
+    // Background indexing: if this chapter hasn't been plain-text indexed yet, extract and save it
+    if (recordMap && targetChapter && !targetChapter.plainText) {
+        try {
+            const { plainText, snippet } = extractNotionPlainText(recordMap);
+            if (plainText) {
+                prisma.chapter.update({
+                    where: { id: targetChapter.id },
+                    data: { plainText, contentSnippet: snippet }
+                }).catch((err) => console.warn("Failed background plainText indexing:", err));
+            }
+        } catch (err) {
+            // Non-blocking
+        }
+    }
+
+    return { recordMap, result2 };
 }
 
-export default fetchNotesContent
+export default fetchNotesContent;

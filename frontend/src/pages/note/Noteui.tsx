@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useContext } from 'react';
 import { theme } from '../../theme';
 import Notenavbar from '../Components/Notenavbar';
+import NotionErrorBoundary from '../Components/NotionErrorBoundary';
 export default function Noteui(){
     const navigate = useNavigate();
     const {subject_name, chapter_name} = useParams();
@@ -30,7 +31,9 @@ export default function Noteui(){
     
     const {data, isError,isLoading} = useQuery({
         queryKey:['notes', subject_name, chapter_name],
-        queryFn:getNotescontent
+        queryFn:getNotescontent,
+        staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: false,
     })
 
     useEffect(() => {
@@ -65,12 +68,21 @@ export default function Noteui(){
                     <Backtohome/>
                 </div>
             </div>
-            <NotionRenderer 
-                recordMap={data?.recordMap} fullPage={true} darkMode={isDark} disableHeader={true}
-                components={{
-                    Code
-                }}
-            />
+            {(!data?.recordMap?.block || Object.keys(data.recordMap.block).length === 0) ? (
+                <div className="w-full max-w-3xl mx-auto px-4 py-20 text-center">
+                    <div className="text-neutral-400 text-lg font-medium mb-2">Content Unavailable</div>
+                    <p className="text-neutral-500 text-sm">This content is temporarily unavailable.</p>
+                </div>
+            ) : (
+                <NotionErrorBoundary>
+                    <NotionRenderer 
+                        recordMap={data?.recordMap} fullPage={true} darkMode={isDark} disableHeader={true}
+                        components={{
+                            Code
+                        }}
+                    />
+                </NotionErrorBoundary>
+            )}
             {
               data?.chaptersData?<Notenavbar chapterList={data.chaptersData} subjectName={subject_name || ""}/> : null
             }

@@ -1,5 +1,10 @@
 # Project Rules
 
+- when user ask to bulding something or add something or update something always use the /Users/bilsonyumnam/Desktop/fullstack project/CMS/.agents/SKILL.md file and the 
+/Users/bilsonyumnam/Desktop/fullstack project/CMS/.agents/references folder
+
+
+
 ## Teaching & Explanation Style
 
 When the user asks to learn or understand a concept, follow this exact pattern:
