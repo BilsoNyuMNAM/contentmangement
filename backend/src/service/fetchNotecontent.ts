@@ -19,20 +19,49 @@ import { extractNotionPlainText } from "./textExtractor.js";
 import { getHybridCache, setHybridCache } from "./notionCache.js";
 
 async function fetchNotesContent(subject_name: string, chapter_name?: string, isAdmin: boolean = false) {
-    subject_name = subject_name.replaceAll("-", " ");
-    const metaCacheKey = `cms:course_meta:${subject_name.toLowerCase().trim()}`;
+    const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const targetSubjectSlug = normalize(subject_name);
+    const metaCacheKey = `cms:course_meta:${targetSubjectSlug}`;
 
     let courseData: { course: any; chapters: any[] } | null = await getHybridCache(metaCacheKey);
 
     if (!courseData) {
-        const result = await prisma.course.findFirst({
+        // 1. Try exact or space-replaced match
+        let result = await prisma.course.findFirst({
             where: {
-                title: {
-                    equals: subject_name,
-                    mode: 'insensitive'
-                }
+                OR: [
+                    { title: { equals: subject_name, mode: 'insensitive' } },
+                    { title: { equals: subject_name.replaceAll("-", " "), mode: 'insensitive' } }
+                ]
             }
         });
+
+        // 2. If not found, match via normalized slug across all courses
+        if (!result) {
+            const allCourses = await prisma.course.findMany();
+            result = allCourses.find(c => normalize(c.title) === targetSubjectSlug) || null;
+        }
+
+        // 3. If still not found, check if subject_name is a chapter pageId
+        if (!result) {
+            const cleanId = subject_name.replaceAll("-", "").toLowerCase();
+            const chapterByPage = await prisma.chapter.findFirst({
+                where: {
+                    OR: [
+                        { pageId: { equals: subject_name, mode: 'insensitive' } },
+                        { pageId: { equals: cleanId, mode: 'insensitive' } }
+                    ]
+                },
+                include: { course: true }
+            });
+
+            if (chapterByPage && chapterByPage.course) {
+                result = chapterByPage.course;
+                if (!chapter_name) {
+                    chapter_name = chapterByPage.chapterName;
+                }
+            }
+        }
 
         if (!result) {
             return null;
@@ -66,13 +95,12 @@ async function fetchNotesContent(subject_name: string, chapter_name?: string, is
     let targetChapter: any = null;
 
     if (chapter_name) {
-        const normalizeSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-        const targetSlug = normalizeSlug(chapter_name);
+        const targetChapterSlug = normalize(chapter_name);
 
         targetChapter = result2.find((chapter: any) =>
-            chapter.chapterName === chapter_name.replaceAll("-", " ") ||
-            chapter.chapterName.replaceAll(" ", "-").toLowerCase() === chapter_name.toLowerCase() ||
-            normalizeSlug(chapter.chapterName) === targetSlug
+            normalize(chapter.chapterName) === targetChapterSlug ||
+            chapter.chapterName.toLowerCase() === chapter_name.toLowerCase() ||
+            chapter.chapterName === chapter_name.replaceAll("-", " ")
         );
 
         if (!targetChapter || !targetChapter.pageId) {

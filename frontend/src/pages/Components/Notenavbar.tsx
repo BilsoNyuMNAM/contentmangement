@@ -1,18 +1,16 @@
-
-
 import { useParams, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { slugify, normalizeSlug } from "@/lib/slug";
 
 export default function Notenavbar({ chapterList, subjectName }: { chapterList: any[], subjectName: string }) {
     const { chapter_name } = useParams();
 
     const getIndex = () => {
         if (!chapterList || !chapter_name) return 0;
-        const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-        const target = norm(chapter_name);
+        const target = normalizeSlug(chapter_name);
         return chapterList.findIndex(
-            (chapter) => norm(chapter.chapterName) === target
+            (chapter) => normalizeSlug(chapter.chapterName) === target
         );
     };
 
@@ -25,20 +23,20 @@ export default function Notenavbar({ chapterList, subjectName }: { chapterList: 
         }
     }, [chapter_name, chapterList]);
 
-    const Navigate = useNavigate();
+    const navigate = useNavigate();
 
     function handleNext() {
         const nextIndex = currentChapterIndex + 1;
         if (nextIndex >= chapterList.length) return;
         setCurrentChapterIndex(nextIndex);
-        Navigate(`/${subjectName}/${chapterList[nextIndex].chapterName.replaceAll(" ", "-")}`, { replace: true });
+        navigate(`/${slugify(subjectName)}/${slugify(chapterList[nextIndex].chapterName)}`, { replace: true });
     }
 
     function handlePrevious() {
         const prevIndex = currentChapterIndex - 1;
         if (prevIndex < 0) return;
         setCurrentChapterIndex(prevIndex);
-        Navigate(`/${subjectName}/${chapterList[prevIndex].chapterName.replaceAll(" ", "-")}`, { replace: true });
+        navigate(`/${slugify(subjectName)}/${slugify(chapterList[prevIndex].chapterName)}`, { replace: true });
     }
 
     const prevChapter = currentChapterIndex > 0 ? chapterList[currentChapterIndex - 1] : null;

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router"
 import { getNotes } from "@/service/centralisedApi";
 import { useQueryClient } from "@tanstack/react-query";
+import { slugify } from "@/lib/slug";
 
 export default function CourseCard({ subject_name, description, tag, chaptersCount }: { subject_name: string, description: string, tag?: string, chaptersCount?: number }) {
     const navigate = useNavigate();
@@ -8,31 +9,32 @@ export default function CourseCard({ subject_name, description, tag, chaptersCou
 
     const prefetchNotes = async (name: string) => {
         const data = await queryClient.fetchQuery({
-            queryKey: ['notes', undefined],
+            queryKey: ['notes', slugify(name), undefined],
             queryFn: () => getNotes(name),
             staleTime: 1000 * 60 * 5,
         });
-        const firstChapter = data?.chaptersData?.[0]?.chapterName?.replaceAll(" ", "-");
+        const firstChapter = data?.chaptersData?.[0]?.chapterName ? slugify(data.chaptersData[0].chapterName) : undefined;
         if (firstChapter) {
-            queryClient.setQueryData(['notes', firstChapter], data);
+            queryClient.setQueryData(['notes', slugify(name), firstChapter], data);
         }
     };
 
     const formattedTag = tag ? tag.toUpperCase() : "GENERAL";
     const count = chaptersCount !== undefined ? chaptersCount : 0;
+    const courseSlug = slugify(subject_name);
 
     return (
         <div 
             className="block border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 sm:p-6 relative overflow-hidden flex flex-col justify-between min-h-[180px] sm:min-h-[200px] bg-white dark:bg-[#0e0e0e] hover:border-neutral-400 dark:hover:border-neutral-600 transition-all cursor-pointer shadow-xs dark:shadow-none"
             onMouseOver={() => prefetchNotes(subject_name)}
-            onClick={() => navigate(`/${subject_name.replaceAll(" ", "-")}`)}
+            onClick={() => navigate(`/${courseSlug}`)}
         >
             <button 
                 className="absolute top-3 right-3 sm:top-4 sm:right-4 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-semibold rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
                 onClick={(e) => {
                     e.stopPropagation();
                     prefetchNotes(subject_name);
-                    navigate(`/${subject_name.replaceAll(" ", "-")}`);
+                    navigate(`/${courseSlug}`);
                 }}
             >
                 Start <span className="font-mono">→</span>

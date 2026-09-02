@@ -893,3 +893,25 @@
     letter-spacing: -2.4px !important;
   }
 }
+
+/* Notion block flash highlight animation */
+@keyframes notion-block-flash {
+  0% {
+    background-color: rgba(59, 130, 246, 0.28);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.28);
+  }
+  50% {
+    background-color: rgba(59, 130, 246, 0.18);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.notion-block-highlighted {
+  animation: notion-block-flash 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+  border-radius: 8px !important;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease !important;
+}

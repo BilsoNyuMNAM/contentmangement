@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { Search, X, BookOpen, FileText, ArrowRight, CornerDownLeft, Loader2, Sparkles } from "lucide-react";
 import { searchContent } from "../../service/centralisedApi";
+import { slugify } from "@/lib/slug";
 
 interface SearchCourseResult {
     id: number;
@@ -110,12 +111,12 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
     function handleSelectCourse(title: string) {
         onClose();
-        navigate(`/${title.replaceAll(" ", "-")}`);
+        navigate(`/${slugify(title)}`);
     }
 
     function handleSelectChapter(courseTitle: string, chapterName: string) {
         onClose();
-        navigate(`/${courseTitle.replaceAll(" ", "-")}/${chapterName.replaceAll(" ", "-")}`);
+        navigate(`/${slugify(courseTitle)}/${slugify(chapterName)}`);
     }
 
     function highlightMatch(text: string, highlight: string) {
