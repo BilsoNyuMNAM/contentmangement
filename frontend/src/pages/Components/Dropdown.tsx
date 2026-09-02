@@ -10,15 +10,11 @@ import { useNavigate } from "react-router"
 import { BookOpen, ChevronDown } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
 import { getNotes } from "@/service/centralisedApi"
-import { useState, useEffect } from "react"
 import { slugify, normalizeSlug } from "@/lib/slug"
 
 export default function Dropdown({ chaptersData, subject_name, chapter_name }: { chaptersData: any[] | null , subject_name:string, chapter_name:string | undefined}) {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const [currentChapter, setCurrentChapter] = useState(
-        chaptersData?.find(chapter => normalizeSlug(chapter.chapterName) === normalizeSlug(chapter_name || ""))?.chapterName || ""
-    );
 
     const prefetchChapter = (chapterName: string) => {
         const formattedChapter = slugify(chapterName);
@@ -28,12 +24,6 @@ export default function Dropdown({ chaptersData, subject_name, chapter_name }: {
             staleTime: 1000 * 60 * 5,
         });
     };
-
-    useEffect(() => {
-        const target = normalizeSlug(chapter_name || "");
-        const current = chaptersData?.find(chapter => normalizeSlug(chapter.chapterName) === target)?.chapterName || "";
-        setCurrentChapter(current);
-    }, [chapter_name, chaptersData]);
 
     return (
         <div>
@@ -58,7 +48,6 @@ export default function Dropdown({ chaptersData, subject_name, chapter_name }: {
                                     onMouseOver={() => prefetchChapter(chapter.chapterName)}
                                     onClick={() => {
                                         navigate(`/${slugify(subject_name)}/${slugify(chapter.chapterName)}`);
-                                        setCurrentChapter(chapter.chapterName);
                                     }}
                                     className={`flex items-center gap-2 text-xs font-spaceMono px-3 py-2 rounded-lg text-white focus:bg-neutral-800 transition-colors duration-150 cursor-pointer ${isCurrent ? "text-neutral-500 font-semibold" : ""}`}
                                 >
