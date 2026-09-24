@@ -18,29 +18,37 @@ enum CourseStatus {
   PUBLISHED
 }
 
+enum ContentSource {
+  NOTION
+  MARKDOWN
+}
+
 model Course {
-  id          Int          @id @default(autoincrement())
-  title       String       @unique
+  id          Int           @id @default(autoincrement())
+  title       String        @unique
   description String?
-  status      CourseStatus @default(PUBLISHED)
+  status      CourseStatus  @default(PUBLISHED)
+  source      ContentSource @default(NOTION)
   chapters    Chapter[]
   tagId       Int?
-  tags        Tag?         @relation(fields: [tagId], references: [id])
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now()) @updatedAt
+  tags        Tag?          @relation(fields: [tagId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
 }
 
 model Chapter {
-  id             Int          @id @default(autoincrement())
-  chapterName    String
-  pageId         String       @unique
-  courseId       Int
-  order          Int?
-  plainText      String?      @db.Text
-  contentSnippet String?      @db.Text
-  course         Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @default(now()) @updatedAt
+  id              Int           @id @default(autoincrement())
+  chapterName     String
+  pageId          String        @unique
+  source          ContentSource @default(NOTION)
+  courseId        Int
+  order           Int?
+  markdownContent String?       @db.Text
+  plainText       String?       @db.Text
+  contentSnippet  String?       @db.Text
+  course          Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
 }
 
 model Tag {

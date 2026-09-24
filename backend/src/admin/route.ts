@@ -5,6 +5,7 @@ import { adminAuthMiddleware } from "./auth.js";
 import { invalidateTagCache } from "../service/findalltags.js";
 import { extractNotionPlainText } from "../service/textExtractor.js";
 import { invalidatePageCache, invalidatePagesCache, clearAllNotionCache, getCachedNotionPage, deleteHybridCache, setHybridCache } from "../service/notionCache.js";
+import { syncMarkdownDirectory } from "../service/markdownSync.js";
 import "dotenv/config";
 
 const adminRouter = express.Router();
@@ -745,6 +746,24 @@ adminRouter.post("/cache/clear", async (req, res) => {
     } catch (err: any) {
         return res.status(500).json({
             error: "Failed to clear cache",
+            details: err.message || err
+        });
+    }
+});
+
+// Step 12: Sync local/git Markdown courses into PostgreSQL
+adminRouter.post("/sync-markdown", async (req, res) => {
+    try {
+        const { dirPath } = req.body || {};
+        const result = await syncMarkdownDirectory(dirPath);
+        return res.json({
+            message: `Markdown sync complete: ${result.coursesCreated} courses created, ${result.coursesUpdated} updated, ${result.chaptersCreated} chapters created, ${result.chaptersUpdated} updated.`,
+            result
+        });
+    } catch (err: any) {
+        console.error("Markdown sync failed:", err);
+        return res.status(500).json({
+            error: "Failed to sync markdown courses",
             details: err.message || err
         });
     }

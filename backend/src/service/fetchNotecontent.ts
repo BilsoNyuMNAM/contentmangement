@@ -103,9 +103,24 @@ async function fetchNotesContent(subject_name: string, chapter_name?: string, is
             chapter.chapterName === chapter_name.replaceAll("-", " ")
         );
 
-        if (!targetChapter || !targetChapter.pageId) {
+        if (!targetChapter) {
             return null;
         }
+
+        // Handle Markdown-based chapter
+        if (targetChapter.source === "MARKDOWN" || targetChapter.markdownContent) {
+            return {
+                contentType: "MARKDOWN",
+                markdown: targetChapter.markdownContent || "",
+                recordMap: null,
+                result2
+            };
+        }
+
+        if (!targetChapter.pageId) {
+            return null;
+        }
+
         try {
             recordMap = await getCachedNotionPage(notion, targetChapter.pageId);
         } catch (error) {
@@ -115,7 +130,19 @@ async function fetchNotesContent(subject_name: string, chapter_name?: string, is
         }
     } else {
         targetChapter = result2[0];
-        const firstPageId = targetChapter?.pageId;
+        if (!targetChapter) return null;
+
+        // Handle Markdown-based first chapter
+        if (targetChapter.source === "MARKDOWN" || targetChapter.markdownContent) {
+            return {
+                contentType: "MARKDOWN",
+                markdown: targetChapter.markdownContent || "",
+                recordMap: null,
+                result2
+            };
+        }
+
+        const firstPageId = targetChapter.pageId;
         if (!firstPageId) {
             return null;
         }
@@ -143,7 +170,12 @@ async function fetchNotesContent(subject_name: string, chapter_name?: string, is
         }
     }
 
-    return { recordMap, result2 };
+    return {
+        contentType: "NOTION",
+        markdown: null,
+        recordMap,
+        result2
+    };
 }
 
 export default fetchNotesContent;

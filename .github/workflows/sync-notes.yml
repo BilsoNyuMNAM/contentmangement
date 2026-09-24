@@ -1,0 +1,67 @@
+name: Sync Notes to Remote Vault
+
+on:
+  push:
+    branches:
+      - HARKIRAT-CMS
+      - master
+      - main
+    paths:
+      - 'notes/**'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+
+permissions:
+  contents: read
+
+jobs:
+  sync-notes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Project (CMS)
+        uses: actions/checkout@v4
+
+      - name: Validate Configuration
+        run: |
+          if [ -z "${{ secrets.NOTES_SYNC_TOKEN }}" ]; then
+            echo "::error::Secret 'NOTES_SYNC_TOKEN' is missing! Please create a GitHub Personal Access Token (PAT) with repository read/write access and add it in CMS Repo -> Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+          TARGET_REPO="${{ secrets.NOTES_TARGET_REPO || vars.NOTES_TARGET_REPO }}"
+          if [ -z "$TARGET_REPO" ]; then
+            echo "::error::'NOTES_TARGET_REPO' is missing! Set it as a Repository Secret or Variable (e.g. BilsoNyuMNAM/my-notes-vault)."
+            exit 1
+          fi
+
+      - name: Checkout Destination Notes Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.NOTES_TARGET_REPO || vars.NOTES_TARGET_REPO }}
+          token: ${{ secrets.NOTES_SYNC_TOKEN }}
+          path: dest-vault
+
+      - name: Synchronize Notes
+        run: |
+          TARGET_SUBDIR="${{ vars.NOTES_TARGET_SUBDIR || 'cms-notes' }}"
+          TARGET_DIR="dest-vault/$TARGET_SUBDIR"
+          
+          # If TARGET_SUBDIR is '.' or empty, sync to the root of the notes vault
+          if [ "$TARGET_SUBDIR" = "." ] || [ -z "$TARGET_SUBDIR" ]; then
+            TARGET_DIR="dest-vault"
+          fi
+          
+          mkdir -p "$TARGET_DIR"
+          rsync -av --delete --exclude='.git' notes/ "$TARGET_DIR/"
+          echo "Notes successfully copied to $TARGET_DIR"
+
+      - name: Commit and Push to Notes Repository
+        run: |
+          cd dest-vault
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes detected in notes. Skipping push."
+          else
+            git commit -m "docs(sync): update notes from CMS [automated sync]"
+            git push origin HEAD
+          fi

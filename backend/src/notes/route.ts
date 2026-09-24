@@ -14,7 +14,9 @@ noteRouter.get("/notes", async (req, res) => {
         return res.status(404).json({ error: "Course or chapter not found" });
     }
     return res.status(200).json({
-        recordMap: result.recordMap,
+        contentType: result.contentType || (result.recordMap ? "NOTION" : "MARKDOWN"),
+        markdown: result.markdown || null,
+        recordMap: result.recordMap || null,
         chaptersData: result.result2
     });
 });

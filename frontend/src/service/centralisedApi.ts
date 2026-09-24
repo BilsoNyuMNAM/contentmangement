@@ -95,6 +95,10 @@ async function clearServerCache() {
     return baseRequest({ endpoint: 'admin/cache/clear', method: 'POST' });
 }
 
+async function syncMarkdownCourses(dirPath?: string) {
+    return baseRequest({ endpoint: 'admin/sync-markdown', method: 'POST', body: { dirPath } });
+}
+
 export { 
     getAllCourses, 
     getNotes, 
@@ -111,5 +115,6 @@ export {
     updateChapter,
     reorderChapters,
     syncCourseFromNotion,
-    clearServerCache
+    clearServerCache,
+    syncMarkdownCourses
 };

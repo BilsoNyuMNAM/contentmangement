@@ -13,6 +13,7 @@ import { theme } from '../../theme';
 import Notenavbar from '../Components/Notenavbar';
 import NotionErrorBoundary from '../Components/NotionErrorBoundary';
 import { slugify, extractNotionId, resolveNotionTarget } from '@/lib/slug';
+import MarkdownRenderer from '../Components/MarkdownRenderer';
 
 export default function Noteui(){
     const navigate = useNavigate();
@@ -205,7 +206,11 @@ export default function Noteui(){
                     <Backtohome/>
                 </div>
             </div>
-            {(!data?.recordMap?.block || Object.keys(data.recordMap.block).length === 0) ? (
+            {data?.contentType === 'MARKDOWN' || data?.markdown ? (
+                <div className="pt-20 pb-16 w-full min-h-screen">
+                    <MarkdownRenderer content={data.markdown || ""} />
+                </div>
+            ) : (!data?.recordMap?.block || Object.keys(data.recordMap.block).length === 0) ? (
                 <div className="w-full max-w-3xl mx-auto px-4 py-20 text-center">
                     <div className="text-neutral-400 text-lg font-medium mb-2">Content Unavailable</div>
                     <p className="text-neutral-500 text-sm">This content is temporarily unavailable.</p>
@@ -229,7 +234,6 @@ export default function Noteui(){
             {
               data?.chaptersData?<Notenavbar chapterList={data.chaptersData} subjectName={subject_name || ""}/>  : null
             }
-            
         </div>
     )
 }
