@@ -1,10 +1,85 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Check, Copy } from "lucide-react";
+import Prism from "prismjs";
+
+// Common language grammars
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-tsx";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-sql";
+import "prismjs/components/prism-yaml";
+import "prismjs/components/prism-markdown";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-rust";
+import "prismjs/components/prism-go";
+import "prismjs/components/prism-java";
+import "prismjs/components/prism-c";
+import "prismjs/components/prism-cpp";
 
 interface MarkdownRendererProps {
     content: string;
+    chapterTitle?: string;
+    isDark?: boolean;
+}
+
+function escapeHtml(str: string): string {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function highlightCode(code: string, language: string): string {
+    if (!code) return "";
+    const cleanLang = (language || "").toLowerCase().trim();
+    const langMap: Record<string, string> = {
+        js: "javascript",
+        jsx: "jsx",
+        ts: "typescript",
+        tsx: "tsx",
+        sh: "bash",
+        bash: "bash",
+        shell: "bash",
+        zsh: "bash",
+        py: "python",
+        python: "python",
+        json: "json",
+        sql: "sql",
+        css: "css",
+        yaml: "yaml",
+        yml: "yaml",
+        html: "markup",
+        xml: "markup",
+        md: "markdown",
+        markdown: "markdown",
+        rust: "rust",
+        rs: "rust",
+        go: "go",
+        java: "java",
+        c: "c",
+        cpp: "cpp",
+        prisma: "javascript"
+    };
+
+    const prismLang = langMap[cleanLang] || cleanLang;
+    const grammar = Prism.languages[prismLang] || Prism.languages.javascript || Prism.languages.markup;
+
+    try {
+        if (grammar) {
+            return Prism.highlight(code, grammar, prismLang);
+        }
+    } catch {
+        // Fallback to escaped HTML if Prism parser fails
+    }
+
+    return escapeHtml(code);
 }
 
 function CodeBlock({ language, code }: { language: string; code: string }) {
@@ -20,136 +95,171 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
         }
     };
 
+    const highlighted = highlightCode(code, language);
+
     return (
-        <div className="relative my-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-900 text-neutral-100 overflow-hidden shadow-xs group">
-            <div className="flex items-center justify-between px-4 py-2 border-b border-neutral-800 bg-neutral-950/70 text-xs font-mono text-neutral-400">
-                <span className="uppercase tracking-wider font-semibold text-[11px] text-neutral-300">
-                    {language || "code"}
-                </span>
-                <button
-                    onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-sans hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors cursor-pointer"
-                    title="Copy code"
-                >
-                    {copied ? (
-                        <>
-                            <Check className="w-3.5 h-3.5 text-emerald-400" />
-                            <span className="text-emerald-400">Copied</span>
-                        </>
-                    ) : (
-                        <>
-                            <Copy className="w-3.5 h-3.5" />
-                            <span>Copy</span>
-                        </>
-                    )}
-                </button>
-            </div>
-            <pre className="p-4 overflow-x-auto text-[13px] leading-relaxed font-mono">
-                <code>{code}</code>
+        <div className="notion-code group">
+            <button
+                type="button"
+                onClick={handleCopy}
+                className="notion-code-copy"
+                title="Copy code"
+            >
+                {copied ? "Copied" : "Copy"}
+            </button>
+            <pre>
+                <code
+                    className={language ? `language-${language}` : "language-text"}
+                    dangerouslySetInnerHTML={{ __html: highlighted }}
+                />
             </pre>
         </div>
     );
 }
 
-export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
+export default function MarkdownRenderer({ content, chapterTitle, isDark = true }: MarkdownRendererProps) {
+    // Strip YAML frontmatter if present at the top
+    const cleanContent = (content || "").replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "").trim();
+
+    // Check if markdown content starts with an H1 heading (e.g. "# What is Caching")
+    const hasLeadingH1 = /^\s*#[^#\n]+/.test(cleanContent);
+    const shouldRenderTopTitle = !hasLeadingH1 && Boolean(chapterTitle?.trim());
+
+    let renderedFirstH1 = false;
+
     return (
-        <div className="markdown-content max-w-4xl mx-auto px-4 sm:px-8 py-8 text-neutral-900 dark:text-neutral-100 leading-relaxed font-sans">
-            <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                    h1: ({ children }) => (
-                        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight mt-8 mb-4 pb-2 border-b border-neutral-200 dark:border-neutral-800 text-neutral-950 dark:text-white">
-                            {children}
-                        </h1>
-                    ),
-                    h2: ({ children }) => (
-                        <h2 className="text-xl sm:text-2xl font-bold tracking-tight mt-8 mb-3 text-neutral-900 dark:text-neutral-100">
-                            {children}
-                        </h2>
-                    ),
-                    h3: ({ children }) => (
-                        <h3 className="text-lg sm:text-xl font-semibold tracking-tight mt-6 mb-2 text-neutral-800 dark:text-neutral-200">
-                            {children}
-                        </h3>
-                    ),
-                    p: ({ children }) => (
-                        <p className="my-3.5 text-[15px] sm:text-base leading-7 text-neutral-700 dark:text-neutral-300">
-                            {children}
-                        </p>
-                    ),
-                    ul: ({ children }) => (
-                        <ul className="list-disc list-outside pl-6 my-3 space-y-1 text-[15px] sm:text-base text-neutral-700 dark:text-neutral-300">
-                            {children}
-                        </ul>
-                    ),
-                    ol: ({ children }) => (
-                        <ol className="list-decimal list-outside pl-6 my-3 space-y-1 text-[15px] sm:text-base text-neutral-700 dark:text-neutral-300">
-                            {children}
-                        </ol>
-                    ),
-                    li: ({ children }) => <li className="leading-7">{children}</li>,
-                    blockquote: ({ children }) => (
-                        <blockquote className="border-l-4 border-indigo-500/80 pl-4 py-2 my-5 rounded-r-xl bg-indigo-50/50 dark:bg-indigo-950/20 text-neutral-700 dark:text-neutral-300 italic text-[15px]">
-                            {children}
-                        </blockquote>
-                    ),
-                    table: ({ children }) => (
-                        <div className="overflow-x-auto my-6 rounded-xl border border-neutral-200 dark:border-neutral-800">
-                            <table className="w-full text-left text-sm border-collapse">
-                                {children}
-                            </table>
-                        </div>
-                    ),
-                    thead: ({ children }) => (
-                        <thead className="bg-neutral-100 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 font-semibold text-neutral-800 dark:text-neutral-200">
-                            {children}
-                        </thead>
-                    ),
-                    tbody: ({ children }) => (
-                        <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
-                            {children}
-                        </tbody>
-                    ),
-                    tr: ({ children }) => (
-                        <tr className="hover:bg-neutral-50/50 dark:hover:bg-neutral-900/50 transition-colors">
-                            {children}
-                        </tr>
-                    ),
-                    th: ({ children }) => <th className="px-4 py-2.5 font-semibold text-xs tracking-wider uppercase">{children}</th>,
-                    td: ({ children }) => <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">{children}</td>,
-                    a: ({ href, children }) => (
-                        <a
-                            href={href}
-                            target={href?.startsWith("http") ? "_blank" : undefined}
-                            rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
-                            className="text-indigo-600 dark:text-indigo-400 font-medium underline underline-offset-2 hover:text-indigo-500 transition-colors"
-                        >
-                            {children}
-                        </a>
-                    ),
-                    hr: () => <hr className="my-8 border-neutral-200 dark:border-neutral-800" />,
-                    code: ({ node, className, children, ...props }: any) => {
-                        const match = /language-(\w+)/.exec(className || "");
-                        const isInline = !match && !String(children).includes("\n");
-
-                        if (isInline) {
+        <div className={`notion ${isDark ? "dark-mode" : ""} notion-full-page`}>
+            <main className="notion-page-content">
+                {shouldRenderTopTitle && (
+                    <h1 className="notion-title">
+                        {chapterTitle}
+                    </h1>
+                )}
+                <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                        h1: ({ children }) => {
+                            if (hasLeadingH1 && !renderedFirstH1) {
+                                renderedFirstH1 = true;
+                                return (
+                                    <h1 className="notion-title">
+                                        {children}
+                                    </h1>
+                                );
+                            }
                             return (
-                                <code
-                                    className="px-1.5 py-0.5 rounded-md text-[13px] font-mono font-medium bg-neutral-200/60 dark:bg-neutral-800/80 text-neutral-800 dark:text-neutral-200 border border-neutral-300/40 dark:border-neutral-700/50"
-                                    {...props}
-                                >
+                                <h1 className="notion-h notion-h1 notion-h-title">
                                     {children}
-                                </code>
+                                </h1>
                             );
-                        }
+                        },
+                        h2: ({ children }) => (
+                            <h2 className="notion-h notion-h2 notion-h-title">
+                                {children}
+                            </h2>
+                        ),
+                        h3: ({ children }) => (
+                            <h3 className="notion-h notion-h3 notion-h-title">
+                                {children}
+                            </h3>
+                        ),
+                        h4: ({ children }) => (
+                            <h4 className="notion-h notion-h4 notion-h-title">
+                                {children}
+                            </h4>
+                        ),
+                        p: ({ children }) => (
+                            <p className="notion-text">
+                                {children}
+                            </p>
+                        ),
+                        strong: ({ children }) => (
+                            <strong className="font-semibold text-neutral-100 dark:text-[#ededed]">
+                                {children}
+                            </strong>
+                        ),
+                        b: ({ children }) => (
+                            <b className="font-semibold text-neutral-100 dark:text-[#ededed]">
+                                {children}
+                            </b>
+                        ),
+                        ul: ({ children }) => (
+                            <ul className="notion-list notion-list-disc list-disc pl-6 my-3">
+                                {children}
+                            </ul>
+                        ),
+                        ol: ({ children }) => (
+                            <ol className="notion-list notion-list-numbered list-decimal pl-6 my-3">
+                                {children}
+                            </ol>
+                        ),
+                        li: ({ children }) => <li>{children}</li>,
+                        blockquote: ({ children }) => (
+                            <blockquote className="notion-quote">
+                                {children}
+                            </blockquote>
+                        ),
+                        table: ({ children }) => (
+                            <div className="overflow-x-auto my-6">
+                                <table className="notion-simple-table">
+                                    {children}
+                                </table>
+                            </div>
+                        ),
+                        thead: ({ children }) => (
+                            <thead>
+                                {children}
+                            </thead>
+                        ),
+                        tbody: ({ children }) => (
+                            <tbody>
+                                {children}
+                            </tbody>
+                        ),
+                        tr: ({ children }) => (
+                            <tr>
+                                {children}
+                            </tr>
+                        ),
+                        th: ({ children }) => <th className="notion-table-header">{children}</th>,
+                        td: ({ children }) => <td className="notion-table-cell">{children}</td>,
+                        a: ({ href, children }) => (
+                            <a
+                                href={href}
+                                target={href?.startsWith("http") ? "_blank" : undefined}
+                                rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
+                                className="notion-link"
+                            >
+                                {children}
+                            </a>
+                        ),
+                        hr: () => <hr className="notion-hr" />,
+                        img: ({ src, alt }: any) => (
+                            <div className="notion-asset-wrapper">
+                                <img src={src} alt={alt || ""} loading="lazy" />
+                                {alt && <div className="notion-asset-caption">{alt}</div>}
+                            </div>
+                        ),
+                        code: ({ node, className, children, ...props }: any) => {
+                            const match = /language-(\w+)/.exec(className || "");
+                            const isInline = !match && !String(children).includes("\n");
 
-                        const codeText = String(children).replace(/\n$/, "");
-                        return <CodeBlock language={match ? match[1] : ""} code={codeText} />;
-                    }
-                }}
-            >
-                {content}
-            </ReactMarkdown>
+                            if (isInline) {
+                                return (
+                                    <code className="notion-inline-code" {...props}>
+                                        {children}
+                                    </code>
+                                );
+                            }
+
+                            const codeText = String(children).replace(/\n$/, "");
+                            return <CodeBlock language={match ? match[1] : ""} code={codeText} />;
+                        }
+                    }}
+                >
+                    {cleanContent}
+                </ReactMarkdown>
+            </main>
         </div>
     );
 }

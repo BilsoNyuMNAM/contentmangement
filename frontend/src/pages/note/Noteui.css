@@ -646,26 +646,49 @@
   color: #3b82f6 !important;
 }
 
+.notion.dark-mode b,
+.notion.dark-mode strong,
 .notion.dark-mode .notion-text b,
 .notion.dark-mode .notion-text strong {
   color: #ededed !important;
   font-weight: 600 !important;
 }
 
+.notion.dark-mode em,
+.notion.dark-mode i,
 .notion.dark-mode .notion-text em,
 .notion.dark-mode .notion-text i {
   color: #c4c4c4 !important;
 }
 
+.notion-light-mode b,
+.notion-light-mode strong,
 .notion-light-mode .notion-text b,
 .notion-light-mode .notion-text strong {
   color: #111111 !important;
   font-weight: 600 !important;
 }
 
+.notion-light-mode em,
+.notion-light-mode i,
 .notion-light-mode .notion-text em,
 .notion-light-mode .notion-text i {
   color: #444444 !important;
+}
+
+.notion.dark-mode p.notion-text,
+.notion.dark-mode .notion-text p {
+  margin: 0.85rem 0 !important;
+}
+
+.notion-light-mode p.notion-text,
+.notion-light-mode .notion-text p {
+  margin: 0.85rem 0 !important;
+}
+
+.notion-list li > p {
+  margin: 0 !important;
+  display: inline;
 }
 
 .notion-equation {

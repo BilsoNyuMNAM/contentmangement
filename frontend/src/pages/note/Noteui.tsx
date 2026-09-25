@@ -12,7 +12,7 @@ import { useEffect, useContext, useCallback } from 'react';
 import { theme } from '../../theme';
 import Notenavbar from '../Components/Notenavbar';
 import NotionErrorBoundary from '../Components/NotionErrorBoundary';
-import { slugify, extractNotionId, resolveNotionTarget } from '@/lib/slug';
+import { slugify, extractNotionId, resolveNotionTarget, normalizeSlug } from '@/lib/slug';
 import MarkdownRenderer from '../Components/MarkdownRenderer';
 
 export default function Noteui(){
@@ -207,9 +207,20 @@ export default function Noteui(){
                 </div>
             </div>
             {data?.contentType === 'MARKDOWN' || data?.markdown ? (
-                <div className="pt-20 pb-16 w-full min-h-screen">
-                    <MarkdownRenderer content={data.markdown || ""} />
-                </div>
+                <MarkdownRenderer 
+                    content={data.markdown || ""} 
+                    chapterTitle={
+                        data?.chaptersData?.find((ch: { chapterName: string }) => {
+                            if (!chapter_name) return true;
+                            return (
+                                normalizeSlug(ch.chapterName) === normalizeSlug(chapter_name) ||
+                                ch.chapterName.toLowerCase() === chapter_name.toLowerCase() ||
+                                ch.chapterName === chapter_name.replaceAll("-", " ")
+                            );
+                        })?.chapterName || chapter_name?.replaceAll("-", " ") || ""
+                    }
+                    isDark={isDark}
+                />
             ) : (!data?.recordMap?.block || Object.keys(data.recordMap.block).length === 0) ? (
                 <div className="w-full max-w-3xl mx-auto px-4 py-20 text-center">
                     <div className="text-neutral-400 text-lg font-medium mb-2">Content Unavailable</div>
